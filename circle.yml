@@ -1,0 +1,73 @@
+machine:
+  services:
+    - docker
+  environment:
+    VM_TYPE: "ec2"
+
+dependencies:
+  cache_directories:
+    - "~/iso"
+    - "~/docker"
+    - "~/.vagrant.d"
+
+  pre:
+    - mkdir -p ~/docker ~/iso
+    # download iso (http://askubuntu.com/questions/412280/extracting-iso-images-to-hd)
+    - if [ ! -e ~/iso/ubuntu-14.04.4-desktop-amd64.iso ]; then cd ~/iso; wget http://releases.ubuntu.com/14.04.4/ubuntu-14.04.4-desktop-amd64.iso; fi
+    - sudo apt-get -f install p7zip-full
+    - 7z x -o/tmp/iso ~/iso/ubuntu-14.04.4-desktop-amd64.iso
+    # enable tcp socket
+    - sudo sed -i 's@^DOCKER_OPTS="@DOCKER_OPTS="-H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock @' /etc/default/docker
+    - sudo service docker restart
+
+  override:
+    # setup docker cache (https://circleci.com/docs/docker, http://tech.feedforce.jp/serverci-by-docker.html)
+    - cd indigo && sed -i 's@^#CIRCLECI#@@' Dockerfile && cat Dockerfile
+    - echo "md5sum of Dockerfile ... $(md5sum indigo/Dockerfile | cut -d' ' -f1)"
+    - if [ -e ~/docker/dockerfile.digest ]; then echo "md5sum of cached data .. $(cat ~/docker/dockerfile.digest)"; fi
+    - | #  see https://discuss.circleci.com/t/conditional-expressions-work-if-used-with-yamal-block-literals/670/5 for discusstion
+      if [ -e ~/docker/indigo-tork.tar ] && [ "$(md5sum indigo/Dockerfile | cut -d' ' -f1)" = "$(cat ~/docker/dockerfile.digest)" ]; then
+         echo "Use Cached Docker Image"  # USE_DOCKER_CACHE: can not use export between different line
+      else
+         echo "Build Docker Image"
+         rm -f ~/docker/dockerfile.digest
+      fi
+    - if [ -e ~/docker/dockerfile.digest ]; then docker load --input ~/docker/indigo-tork.tar; fi
+    - if [ ! -e ~/docker/dockerfile.digest ]; then docker build -t indigo-tork indigo; fi
+    - if [ ! -e ~/docker/dockerfile.digest ]; then docker save indigo-tork > ~/docker/indigo-tork.tar; fi
+    - if [ ! -e ~/docker/dockerfile.digest ]; then md5sum indigo/Dockerfile  | cut -d' ' -f1 > ~/docker/dockerfile.digest; fi
+    # setup vagrant
+    - cd vagrant && make all-$VM_TYPE # make will install, add and up
+  post:
+    - cd vagrant && vagrant status $VM_TYPE
+    - cd vagrant && vagrant ssh $VM_TYPE -- ifconfig
+    - cd vagrant && vagrant ssh $VM_TYPE -- cp /opt/docker/indigo-tork.tar .
+    - cd vagrant && vagrant ssh $VM_TYPE -- ls -al
+    - cd vagrant && while ! vagrant ssh $VM_TYPE -- docker images | grep indigo-tork; do vagrant ssh $VM_TYPE -- bash -c \"ls -al\; docker images\; docker load --input indigo-tork.tar\"; done
+    - cd vagrant && vagrant ssh $VM_TYPE -- docker images
+
+test:
+  override:
+    # check docker
+    - echo "Running Tests on Docker"
+    - cd indigo && make test
+    # build iso
+    - echo "Running ISO Builder"
+    - cd builder && VM_TYPE=$VM_TYPE make && ls -al binary.hybrid.iso
+    # test iso
+    - echo "Running Test on ISO "
+    - cd vagrant && vagrant ssh $VM_TYPE -- make -C /vagrant install-vbox
+    - cd vagrant && vagrant ssh $VM_TYPE -- make -C build iso-test # build-vagrant copy /opt/builder to build
+
+  post:
+    # copy results
+    - cd vagrant && vagrant ssh $VM_TYPE -- df -h
+    - cp builder/indigo-tork-*.iso $CIRCLE_ARTIFACTS
+    # stop vagrant
+    - cd vagrant && make clean
+
+deployment:
+  release:
+    tag: /[0-9]+(\.[0-9]+)*/
+    commands:
+      - ./.github_release.sh

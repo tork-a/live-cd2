@@ -1,0 +1,76 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Vagrantfile API/syntax version. Don't touch unless you know what you're doing!
+VAGRANTFILE_API_VERSION = "2"
+
+Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
+
+  # # virtualbox
+  config.vm.define :vbox, autostart: true do |vbox|
+    vbox.vm.box = "ubuntu:14.04"
+    vbox.vm.box_url = "https://cloud-images.ubuntu.com/vagrant/trusty/current/trusty-server-cloudimg-amd64-vagrant-disk1.box"
+    vbox.vm.network :private_network, ip:"192.168.33.11"
+  end
+
+  # aws instance https://github.com/mitchellh/vagrant-aws
+  # http://mogproject.blogspot.jp/2014/07/aws-creating-new-ec2-instance-in.html
+  config.vm.define :ec2, autostart: false do |ec2|
+    ec2.vm.box = 'dummy'
+    ec2.vm.box_url = 'https://raw.githubusercontent.com/mitchellh/vagrant-aws/master/dummy.box'
+
+    ec2.vm.provider :aws do |aws, override|
+      aws.access_key_id     = ENV['AWS_ACCESS_KEY_ID']
+      aws.secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
+      aws.region            = "us-east-1"
+      aws.availability_zone = "us-east-1b"
+
+      #aws.ami               = "ami-08111162" # Amazon Linux AMI 2016.03.0 (HVM), SSD Volume Type
+      aws.ami               = "ami-fce3c696" # Ubuntu Server 14.04 LTS (HVM), SSD Volume Type
+      aws.block_device_mapping = [{ 'DeviceName' => '/dev/sda1',
+                                    'Ebs.VolumeSize' => 40,
+                                    'Ebs.VolumeType' => 'gp2', # use SSD
+                                    'Ebs.DeleteOnTermination' => 'true'}]
+
+      aws.keypair_name      = 'vagrant'
+      #aws.instance_type     = "t2.micro"
+      aws.instance_type     = "m3.large"
+
+      aws.security_groups = [ 'sg-7bc99803' ]
+      aws.subnet_id = "subnet-797ff953"
+      aws.tags = { 'Name' => 'CircleCI (Vagrant-AWS)' }
+      aws.associate_public_ip = true
+
+      # ssh
+      override.ssh.username = "ubuntu"
+      ## This private key is configured on CircleCI
+      override.ssh.private_key_path = ENV['AWS_SSH_KEY_PATH']
+   end
+
+ end
+
+  # could not share builder, vagrant, they may fail
+  config.vm.synced_folder "../builder", "/opt/builder"
+  config.vm.synced_folder "~/docker", "/opt/docker"
+  config.vm.synced_folder "/tmp/iso", "/tmp/iso"
+
+  config.vm.provision :shell, inline:<<-EOS
+        set -x
+        apt-get install -y net-tools
+        # need to escape backslash in shel in-line
+        echo "$(ifconfig | grep eth0 -A 1  | sed -n 's@.*inet addr:\\([0-9.]*\\)*.*@\\1@p') $(hostname)" >> /etc/hosts
+        cat /etc/hosts
+        apt-get update
+        apt-get install -y git build-essential fakeroot debhelper gdebi live-build
+        apt-get install -y ubuntu-defaults-builder
+        while ! docker --version ; do wget -qO- https://get.docker.com/ | sh ; done
+        usermod -aG docker vagrant
+        usermod -aG docker ubuntu
+        sed -i 's@#DOCKER_OPTS=@DOCKER_OPTS="-H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock" #@' /etc/default/docker
+        service docker restart
+        locale-gen en_US.UTF-8
+        locale-gen ja_JP.UTF-8
+        dpkg-reconfigure locales
+  EOS
+
+end

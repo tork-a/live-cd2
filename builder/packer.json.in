@@ -1,0 +1,33 @@
+{
+  "provisioners": [
+    {
+      "type": "shell",
+      "scripts": [
+        "packer-postinstall.sh"
+      ],
+      "override": {
+        "qemu": {
+          "execute_command": "{{ .Vars }} bash -x -i '{{.Path}}'"
+        }
+      }
+    }
+  ],
+  "builders": [
+    {
+      "type": "qemu",
+      "accelerator": "none",
+      "headless": "true",
+      "boot_wait": "4s",
+      "disk_size": 10140,
+      "http_directory": "http",
+      "iso_checksum": "@ISO_MD5SUM@",
+      "iso_checksum_type": "md5",
+      "iso_url": "@ISO_URL@",
+      "ssh_username": "tork",
+      "ssh_password": "password",
+      "ssh_port": 22,
+      "ssh_wait_timeout": "1000s",
+      "shutdown_command": "echo 'shutdown -P now' > shutdown.sh; sudo -S sh 'shutdown.sh'"
+    }
+  ]
+}
