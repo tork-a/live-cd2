@@ -1,0 +1,12 @@
+<package>
+
+  <name>live-cd</name>
+  <version>2.0.0</version>
+  <description>
+     indigo-ros live cd
+  </description>
+  <maintainer email="kei.okada@gmail.com">Kei Okada</maintainer>
+
+  <license>Criative Commons</license>
+
+</package>
