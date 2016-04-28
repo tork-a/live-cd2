@@ -107,7 +107,7 @@ depends.txt:
 tork-indigo.sh:
 	$(call colorecho, "get command history")
 	# http://stackoverflow.com/questions/19104847/how-to-generate-a-dockerfile-from-an-image
-	docker history --no-trunc=true tork/indigo | tr -s " " | /bin/sed -e 's,#(nop) USER \[\(.*\)\],sudo -u \1 -H -i <<EOF,' | /bin/sed -e 's,#(nop) WORKDIR \(.*\),cd \1,' | /bin/sed -e 's,#(nop) ENV \(.*\),export \1,' | /bin/sed -n -e 's,[0-9.]* [kMG]\?B *$$,,p' | sed -n -e 's,.*/bin/sh -c \(.*\),\1,p' | /bin/sed -e 's,^\(.*\)#CIRCLECI#,#CIRCLECI# \1,' | head -n -3 | tac | tee tork-indigo.sh
+	docker history --no-trunc=true tork/indigo | tr -s " " | /bin/sed -e 's,#(nop) USER \[\(.*\)\],sudo -u \1 -H -i <<EOF,' | /bin/sed -e 's,#(nop) WORKDIR \(.*\),cd \1,' | /bin/sed -e 's,#(nop) ENV \(.*\),export \1,' | /bin/sed -n -e 's,[0-9.]* [kMG]\?B *$$,,p' | sed -n -e 's,.*/bin/sh -c \(.*\),\1,p' | /bin/sed -e 's,^\(.*\)#CIRCLECI#,#CIRCLECI# \1,' | tac | sed '0,/MAINTAINER/d' | tee tork-indigo.sh
 	echo "EOF" >> tork-indigo.sh
 
 tork-defaults:
