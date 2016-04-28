@@ -25,6 +25,8 @@ test:
 	#docker run --rm -i -t tork/indigo rostest denso_launch vs060.test # check denso (need to wait for 1.1.5)
 	#docker run --rm -i -t tork/indigo rostest hironx_ros_bridge test-hironx-ros-bridge-pose.test # test hironx
 
+push:
+	docker push tork/indigo
 
 clean:
 	# rm old docker image
