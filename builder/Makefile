@@ -75,7 +75,7 @@ setup-vagrant:
 	# make lb build verbose, not to 'took more than 10 minutes since last output'
 	sshpass -p vagrant ssh -o StrictHostkeyChecking=no -p 22 ${VAGRANT_USERNAME}@${VAGRANT_HOSTNAME} bash -c "set -x; export TERM=xterm; sudo apt-get -y install live-build; sudo sed -i 's@-no-progress@@' /usr/lib/live/build/lb_binary_rootfs"
 
-build-vagrant: #depends.txt indigo-tork.sh add-apt-repository
+build-vagrant: #depends.txt tork-indigo.sh add-apt-repository
 	$(call colorecho, "build iso on vagrant machine")
 	# location of builder is /opt/builder, see ../vagrant/Vagrantfile config.vm.synced_folder "../builder", "/opt/builder"
 	sshpass -p vagrant ssh -o StrictHostkeyChecking=no -p 22 ${VAGRANT_USERNAME}@${VAGRANT_HOSTNAME} bash -c "set -x; uname -a; set -x; hostname; export TERM=xterm; mkdir -p build; cd build; cp -r /opt/builder/* ./; ls -al; make ${BUILD_TARGET} VERBOSE=1;"
@@ -101,14 +101,14 @@ build-docker:
 
 depends.txt:
 	$(call colorecho, "get installed packages")
-	#docker run --rm indigo-tork bash -c 'echo "sudo apt-get update -qq; dpkg --get-selections | cut -d$$'"'"'\t'"'"' -f1 | xargs -r -n1 bash -c '"'"'apt-cache showpkg \$$0 | grep ubuntu.com > /dev/null && echo \$$0'"'"'" > gen_deps; bash ./gen_deps' | sed s/:amd64// | tee depends.txt
-	docker run --rm indigo-tork dpkg --get-selections | sed -e 's@\s*install$$@@g' | sed 's/:amd64//' | tee depends.txt
+	#docker run --rm tork/indigo bash -c 'echo "sudo apt-get update -qq; dpkg --get-selections | cut -d$$'"'"'\t'"'"' -f1 | xargs -r -n1 bash -c '"'"'apt-cache showpkg \$$0 | grep ubuntu.com > /dev/null && echo \$$0'"'"'" > gen_deps; bash ./gen_deps' | sed s/:amd64// | tee depends.txt
+	docker run --rm tork/indigo dpkg --get-selections | sed -e 's@\s*install$$@@g' | sed 's/:amd64//' | tee depends.txt
 
-indigo-tork.sh:
+tork-indigo.sh:
 	$(call colorecho, "get command history")
 	# http://stackoverflow.com/questions/19104847/how-to-generate-a-dockerfile-from-an-image
-	docker history --no-trunc=true indigo-tork | tr -s " " | /bin/sed -e 's,#(nop) USER \[\(.*\)\],sudo -u \1 -H -i <<EOF,' | /bin/sed -e 's,#(nop) WORKDIR \(.*\),cd \1,' | /bin/sed -e 's,#(nop) ENV \(.*\),export \1,' | /bin/sed -n -e 's,[0-9.]* [kMG]\?B *$$,,p' | sed -n -e 's,.*/bin/sh -c \(.*\),\1,p' | /bin/sed -e 's,^\(.*\)#CIRCLECI#,#CIRCLECI# \1,' | head -n -3 | tac | tee indigo-tork.sh
-	echo "EOF" >> indigo-tork.sh
+	docker history --no-trunc=true tork/indigo | tr -s " " | /bin/sed -e 's,#(nop) USER \[\(.*\)\],sudo -u \1 -H -i <<EOF,' | /bin/sed -e 's,#(nop) WORKDIR \(.*\),cd \1,' | /bin/sed -e 's,#(nop) ENV \(.*\),export \1,' | /bin/sed -n -e 's,[0-9.]* [kMG]\?B *$$,,p' | sed -n -e 's,.*/bin/sh -c \(.*\),\1,p' | /bin/sed -e 's,^\(.*\)#CIRCLECI#,#CIRCLECI# \1,' | head -n -3 | tac | tee tork-indigo.sh
+	echo "EOF" >> tork-indigo.sh
 
 tork-defaults:
 	$(call colorecho, "template tork-defaults files")
@@ -167,13 +167,13 @@ archives/tork-defaults.list:
 	$(call colorecho, "get sources.list.d/*.list")
 	## get from docker
 	mkdir -p archives/
-	docker run --rm indigo-tork sh -c 'cat /etc/apt/sources.list.d/*.list' > archives/tork-defaults.list;
+	docker run --rm tork/indigo sh -c 'cat /etc/apt/sources.list.d/*.list' > archives/tork-defaults.list;
 	sed -i 's@https://@http://@' archives/tork-defaults.list
 
 archives/tork-defaults.key:
 	$(call colorecho, "get apt-keys")
 	mkdir -p archives/
-	docker run --rm indigo-tork apt-key exportall | gpg --dearmor > archives/tork-defaults.key
+	docker run --rm tork/indigo apt-key exportall | gpg --dearmor > archives/tork-defaults.key
 
 
 iso-build:
@@ -181,8 +181,8 @@ iso-build:
 	$(call colorecho, "install ubuntu-defaults-builder build-essential")
 	sudo apt-get install -y ubuntu-defaults-builder build-essential xorriso
 
-	$(call colorecho, "make indigo-tork.sh")
-	make indigo-tork.sh
+	$(call colorecho, "make tork-indigo.sh")
+	make tork-indigo.sh
 
 	$(call colorecho, "make depends.txt")
 	make depends.txt
@@ -196,8 +196,8 @@ iso-build:
 	make tork-defaults/debian/tork-defaults.install
 
 	# custom from Dockerfile
-	$(call colorecho, "cat indigo-tork.sh >> tork-defaults/hooks/chroot")
-	cat indigo-tork.sh >> tork-defaults/hooks/chroot
+	$(call colorecho, "cat tork-indigo.sh >> tork-defaults/hooks/chroot")
+	cat tork-indigo.sh >> tork-defaults/hooks/chroot
 
 	$(call colorecho, "cat depends.txt >> tork-defaults/depends.txt")
 	cat depends.txt >> tork-defaults/depends.txt
@@ -252,7 +252,7 @@ iso-run:
 ### test iso with packer
 packer.json: packer.json.in
 	# add iso filename and md5sum
-	cat packer.json.in | sed 's#@ISO_MD5SUM@#$(shell md5sum indigo-tork-*.iso | cut -f1 -d\ )#' | sed 's#@ISO_URL@#file://$(CURDIR)/$(shell ls indigo-tork-*.iso)#' | tee packer.json;
+	cat packer.json.in | sed 's#@ISO_MD5SUM@#$(shell md5sum tork-indigo-*.iso | cut -f1 -d\ )#' | sed 's#@ISO_URL@#file://$(CURDIR)/$(shell ls indigo-tork-*.iso)#' | tee packer.json;
 
 packer:
 	# download packer
@@ -290,7 +290,7 @@ clean:
 
 	# rm ubuntu-defaults-image files
 	$(call colorecho, "reomve build files")
-	sudo rm -fr .build auto archives binary* chroot* config livecd.* local indigo-tork.sh depends.txt docker-build
+	sudo rm -fr .build auto archives binary* chroot* config livecd.* local tork-indigo.sh depends.txt docker-build
 
 	$(call colorecho, "reomve cache")
 	sudo rm -fr cache
