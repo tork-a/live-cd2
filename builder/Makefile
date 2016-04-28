@@ -252,7 +252,7 @@ iso-run:
 ### test iso with packer
 packer.json: packer.json.in
 	# add iso filename and md5sum
-	cat packer.json.in | sed 's#@ISO_MD5SUM@#$(shell md5sum tork-indigo-*.iso | cut -f1 -d\ )#' | sed 's#@ISO_URL@#file://$(CURDIR)/$(shell ls indigo-tork-*.iso)#' | tee packer.json;
+	cat packer.json.in | sed 's#@ISO_MD5SUM@#$(shell md5sum indigo-tork-*.iso | cut -f1 -d\ )#' | sed 's#@ISO_URL@#file://$(CURDIR)/$(shell ls indigo-tork-*.iso)#' | tee packer.json;
 
 packer:
 	# download packer
