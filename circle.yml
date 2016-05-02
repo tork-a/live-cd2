@@ -26,24 +26,24 @@ dependencies:
     - echo "md5sum of Dockerfile ... $(md5sum indigo/Dockerfile | cut -d' ' -f1)"
     - if [ -e ~/docker/dockerfile.digest ]; then echo "md5sum of cached data .. $(cat ~/docker/dockerfile.digest)"; fi
     - | #  see https://discuss.circleci.com/t/conditional-expressions-work-if-used-with-yamal-block-literals/670/5 for discusstion
-      if [ -e ~/docker/indigo-tork.tar ] && [ "$(md5sum indigo/Dockerfile | cut -d' ' -f1)" = "$(cat ~/docker/dockerfile.digest)" ]; then
+      if [ -e ~/docker/tork-indigo.tar ] && [ "$(md5sum indigo/Dockerfile | cut -d' ' -f1)" = "$(cat ~/docker/dockerfile.digest)" ]; then
          echo "Use Cached Docker Image"  # USE_DOCKER_CACHE: can not use export between different line
       else
          echo "Build Docker Image"
          rm -f ~/docker/dockerfile.digest
       fi
-    - if [ -e ~/docker/dockerfile.digest ]; then docker load --input ~/docker/indigo-tork.tar; fi
-    - if [ ! -e ~/docker/dockerfile.digest ]; then docker build -t indigo-tork indigo; fi
-    - if [ ! -e ~/docker/dockerfile.digest ]; then docker save indigo-tork > ~/docker/indigo-tork.tar; fi
+    - if [ -e ~/docker/dockerfile.digest ]; then docker load --input ~/docker/tork-indigo.tar; fi
+    - if [ ! -e ~/docker/dockerfile.digest ]; then docker build -t tork/indigo indigo; fi
+    - if [ ! -e ~/docker/dockerfile.digest ]; then docker save tork/indigo > ~/docker/tork-indigo.tar; fi
     - if [ ! -e ~/docker/dockerfile.digest ]; then md5sum indigo/Dockerfile  | cut -d' ' -f1 > ~/docker/dockerfile.digest; fi
     # setup vagrant
     - cd vagrant && make all-$VM_TYPE # make will install, add and up
   post:
     - cd vagrant && vagrant status $VM_TYPE
     - cd vagrant && vagrant ssh $VM_TYPE -- ifconfig
-    - cd vagrant && vagrant ssh $VM_TYPE -- cp /opt/docker/indigo-tork.tar .
+    - cd vagrant && vagrant ssh $VM_TYPE -- cp /opt/docker/tork-indigo.tar .
     - cd vagrant && vagrant ssh $VM_TYPE -- ls -al
-    - cd vagrant && while ! vagrant ssh $VM_TYPE -- docker images | grep indigo-tork; do vagrant ssh $VM_TYPE -- bash -c \"ls -al\; docker images\; docker load --input indigo-tork.tar\"; done
+    - cd vagrant && while ! vagrant ssh $VM_TYPE -- docker images | grep tork/indigo; do vagrant ssh $VM_TYPE -- bash -c \"ls -al\; docker images\; docker load --input tork-indigo.tar\"; done
     - cd vagrant && vagrant ssh $VM_TYPE -- docker images
 
 test:

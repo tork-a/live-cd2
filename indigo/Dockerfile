@@ -51,7 +51,7 @@ RUN echo ";; emacs settings\n\
 ## .ros.bashrc
 RUN echo "\n\
 source /opt/ros/indigo/setup.bash\n\
-source \`catkin --locate-extra-shell-verbs\`\n\
+source \`catkin locate --shell-verbs\`\n\
 " > /etc/skel/.ros.bashrc
 
 # make home directory (user name other than ubuntu is not woking because it is hard corded /usr/share/livecd-rootfs/live-build/auto/config)
@@ -72,8 +72,6 @@ RUN apt-get -y install language-pack-gnome-ja latex-cjk-japanese xfonts-intl-jap
 
 # ros dev. tools
 RUN apt-get -y install python-catkin-tools
-## until catkin_tools > 0.3.1 (https://github.com/catkin/catkin_tools/pull/268)
-RUN wget https://patch-diff.githubusercontent.com/raw/catkin/catkin_tools/pull/268.diff -O - | sudo patch -p1 -d /usr/lib/python2.7/dist-packages/
 
 RUN apt-get -y install ros-$ROS_DISTRO-jsk-tools
 RUN apt-get -y install ros-$ROS_DISTRO-jsk-rviz-plugins

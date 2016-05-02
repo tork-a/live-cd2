@@ -1,5 +1,5 @@
 ##
-## create docker image for indigo-tork
+## create docker image for tork/indigo
 ##
 ## `make run` to test within the docker
 ##
@@ -13,18 +13,20 @@ all: Dockerfile
 	$(call colorecho, "docker images")
 	docker images
 	$(call colorecho, "docker build")
-	docker build -t indigo-tork .
+	docker build -t tork/indigo .
 	$(call colorecho, "docker images")
-	docker images indigo-tork
+	docker images tork/indigo
 
 run:
-	docker run --rm --env="DISPLAY" --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" -i -t indigo-tork /bin/bash
+	docker run --rm --env="DISPLAY" --volume="/tmp/.X11-unix:/tmp/.X11-unix:rw" -i -t tork/indigo /bin/bash
 
 test:
-	docker run --rm -i -t indigo-tork rospack list # check if ros environment is set
-	#docker run --rm -i -t indigo-tork rostest denso_launch vs060.test # check denso (need to wait for 1.1.5)
-	#docker run --rm -i -t indigo-tork rostest hironx_ros_bridge test-hironx-ros-bridge-pose.test # test hironx
+	docker run --rm -i -t tork/indigo rospack list # check if ros environment is set
+	#docker run --rm -i -t tork/indigo rostest denso_launch vs060.test # check denso (need to wait for 1.1.5)
+	#docker run --rm -i -t tork/indigo rostest hironx_ros_bridge test-hironx-ros-bridge-pose.test # test hironx
 
+push:
+	docker push tork/indigo
 
 clean:
 	# rm old docker image
