@@ -7,6 +7,7 @@ WORKDIR /home/tork/
 
 # install hakuto package
 RUN sudo apt-get install -y ros-indigo-hakuto
+RUN sudo apt-get install -y python-twisted ## https://github.com/RobotWebTools/rosbridge_suite/pull/219
 RUN sudo rm /bin/sh && sudo ln -s /bin/bash /bin/sh # http://stackoverflow.com/questions/20635472/using-the-run-instruction-in-a-dockerfile-with-source-does-not-work
 
 # setup moon
