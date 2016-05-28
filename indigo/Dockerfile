@@ -64,6 +64,8 @@ RUN echo "tork ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/tork
 ##
 ## setup packages
 ##
+RUN apt-get update && echo "@DATE@"
+
 # install dev. tools
 RUN apt-get -y install aptitude git ntp emacs vim wget curl
 

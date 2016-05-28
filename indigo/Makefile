@@ -6,6 +6,7 @@
 
 # http://eli.thegreenplace.net/2013/12/18/makefile-functions-and-color-output
 include ../color.mk
+DATE=$(shell date +%Y%m%d_%H%M%S)
 
 all: Dockerfile
 	$(call colorecho, "docker info")
@@ -13,7 +14,9 @@ all: Dockerfile
 	$(call colorecho, "docker images")
 	docker images
 	$(call colorecho, "docker build")
-	docker build -t tork/indigo .
+	sed 's#@DATE@#$(DATE)#' Dockerfile > Dockerfile.$(DATE)
+	docker build -f Dockerfile.$(DATE) -t tork/indigo .
+	rm Dockerfile.$(DATE)
 	$(call colorecho, "docker images")
 	docker images tork/indigo
 
