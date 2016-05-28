@@ -46,21 +46,9 @@ RUN sudo apt-get install -y openssh-server apache2 supervisor
 RUN sudo mkdir -p /var/lock/apache2 /var/run/apache2 /var/run/sshd /var/log/supervisor
 
 # setup joystick
-#RUN source /opt/ros/indigo/setup.bash && cp `rospack find tetris_launch`/www/joystick.html /var/www/
-RUN wget https://raw.githubusercontent.com/tork-a/hakuto/0.1.6/tetris_launch/www/joystick.html -O /var/www/html/joystick.html
-RUN sed -i 's@54.199.141.230@127.0.0.1@'  /var/www/html/joystick.html
+RUN source /opt/ros/indigo/setup.bash && cp `rospack find tetris_launch`/www/joystick.html /var/www/
 
 RUN sudo apt-get install -y telnet # for debug
-
-# hot fix
-## https://github.com/tork-a/hakuto/pull/63
-RUN wget https://raw.githubusercontent.com/tork-a/88_tools/master/hotfixer/hot_fix.sh
-RUN yes | bash ./hot_fix.sh tork-a/hakuto 57
-RUN yes | bash ./hot_fix.sh tork-a/hakuto 58
-RUN yes | bash ./hot_fix.sh tork-a/hakuto 63 /opt/ros/indigo/share 1 0
-RUN yes | bash ./hot_fix.sh tork-a/hakuto 63 /opt/ros/indigo/share 1 1
-RUN yes | bash ./hot_fix.sh tork-a/hakuto 63 /opt/ros/indigo/share 1 3
-RUN yes | bash ./hot_fix.sh tork-a/hakuto 63 /opt/ros/indigo/share 1 4
 
 # setup supervisor
 # access current status from http://<ip address>:9001/
