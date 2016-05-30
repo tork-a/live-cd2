@@ -2,8 +2,8 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.2 (2016-05-30)
+------------------
 * download ros_seminar to ~/Downloads (`#5 <https://github.com/k-okada/live-cd2/issues/5>`_)
 * Fix master broken 05/28 (`#4 <https://github.com/k-okada/live-cd2/issues/4>`_ )
 
