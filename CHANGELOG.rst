@@ -2,6 +2,14 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add clive-cd version on boot menu (https://github.com/k-okada/live-cd2/issues/6 )
+* add comment on live-cd version within .bashrc (https://github.com/k-okada/live-cd2/issues/6 )
+* cirlce.yml : docker repo name is tork not tork-a (https://github.com/k-okada/live-cd2/issues/6 )
+
+* Contributors: Kei Okada
+
 2.0.2 (2016-05-30)
 ------------------
 * download ros_seminar to ~/Downloads (`#5 <https://github.com/k-okada/live-cd2/issues/5>`_)
