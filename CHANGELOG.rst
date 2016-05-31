@@ -2,8 +2,8 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.3 (2016-05-31)
+------------------
 * add clive-cd version on boot menu (https://github.com/k-okada/live-cd2/issues/6 )
 * add comment on live-cd version within .bashrc (https://github.com/k-okada/live-cd2/issues/6 )
 * cirlce.yml : docker repo name is tork not tork-a (https://github.com/k-okada/live-cd2/issues/6 )
