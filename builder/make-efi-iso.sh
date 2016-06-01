@@ -22,6 +22,8 @@ sudo sed -i 's@^ui @#ui @' isolinux/isolinux.cfg
 # remove prompt to eject cd : http://www.pendrivelinux.com/ubuntu-remove-the-prompt-to-eject-cd/
 sudo sed -i 's@quiet splash --@quiet splash noprompt username=tork --@' isolinux/txt.cfg
 sudo sed -i 's@Ubuntu@ROS Ubuntu $(git describe --abbrev=0 --tags)@' isolinux/txt.cfg
+sudo sed -i 's@quiet splash --@quiet splash noprompt username=tork --@' boot/grub/grub.cfg
+sudo sed -i 's@Ubuntu@ROS Ubuntu $(git describe --abbrev=0 --tags)@' boot/grub/grub.cfg
 
 cd ..
 cat <<EOF | sudo tee sort.txt
