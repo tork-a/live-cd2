@@ -78,7 +78,7 @@ setup-vagrant:
 build-vagrant: #depends.txt tork-indigo.sh add-apt-repository
 	$(call colorecho, "build iso on vagrant machine")
 	# location of builder is /opt/builder, see ../vagrant/Vagrantfile config.vm.synced_folder "../builder", "/opt/builder"
-	sshpass -p vagrant ssh -o StrictHostkeyChecking=no -p 22 ${VAGRANT_USERNAME}@${VAGRANT_HOSTNAME} bash -c "set -x; uname -a; set -x; hostname; export TERM=xterm; mkdir -p build; cd build; cp -r /opt/builder/* ./; ls -al; make ${BUILD_TARGET} VERBOSE=1;"
+	sshpass -p vagrant ssh -o StrictHostkeyChecking=no -p 22 ${VAGRANT_USERNAME}@${VAGRANT_HOSTNAME} bash -c "set -x; uname -a; set -x; hostname; export TERM=xterm; mkdir -p build; cd build; cat /opt/builder/make-efi-iso.sh; cp -r /opt/builder/* ./; ls -al; make ${BUILD_TARGET} VERBOSE=1;"
 	sshpass -p vagrant scp -o StrictHostkeyChecking=no -P 22 ${VAGRANT_USERNAME}@${VAGRANT_HOSTNAME}:build/*.iso .
 
 ###
@@ -98,6 +98,8 @@ build-docker:
 ###
 ###
 ###
+update-make-efi-iso-sh:
+	sed -i 's@$$(git describe --abbrev=0 --tags)@$(shell git describe --abbrev=0 --tags)@' make-efi-iso.sh
 
 depends.txt:
 	$(call colorecho, "get installed packages")
