@@ -33,7 +33,7 @@ dependencies:
          rm -f ~/docker/dockerfile.digest
       fi
     - if [ -e ~/docker/dockerfile.digest ]; then docker load --input ~/docker/tork-indigo.tar; fi
-    - if [ ! -e ~/docker/dockerfile.digest ]; then docker build -t tork/indigo indigo; fi
+    - if [ ! -e ~/docker/dockerfile.digest ]; then cd indigo; make all; fi
     - if [ ! -e ~/docker/dockerfile.digest ]; then docker save tork/indigo > ~/docker/tork-indigo.tar; fi
     - if [ ! -e ~/docker/dockerfile.digest ]; then md5sum indigo/Dockerfile  | cut -d' ' -f1 > ~/docker/dockerfile.digest; fi
     # setup vagrant
