@@ -2,6 +2,19 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Show version tag in meny and add CHANGELOG.rst to home directory `#7 <https://github.com/k-okada/live-cd2/issues/7>`_
+
+  * add CHANGELOG.rst
+  * add persistent for grub.cfg
+  * use make command to build docker images
+  * update grub.cfg menu for UEFI boot
+  * update mkae-efi-iso.sh before running within vagrant
+  * fix https://github.com/k-okada/live-cd2/pull/6/commits/ab9e1f702c321d0b24d3067f85946a7520b00cfa, we can not get git version within docker
+
+* Contributors: Kei Okada
+
 2.0.3 (2016-05-31)
 ------------------
 * add clive-cd version on boot menu (https://github.com/k-okada/live-cd2/issues/6 )
