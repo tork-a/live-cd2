@@ -7,6 +7,7 @@
 # http://eli.thegreenplace.net/2013/12/18/makefile-functions-and-color-output
 include ../color.mk
 DATE=$(shell date +%Y%m%d_%H%M%S)
+GIT_TAG=$(shell git describe --abbrev=0 --tags)
 
 all: Dockerfile
 	$(call colorecho, "docker info")
@@ -14,9 +15,15 @@ all: Dockerfile
 	$(call colorecho, "docker images")
 	docker images
 	$(call colorecho, "docker build")
-	sed 's#@DATE@#$(DATE)#' Dockerfile > Dockerfile.$(DATE)
+	cp ../CHANGELOG.rst CHANGELOG.rst
+	echo "" >> CHANGELOG.rst
+	echo "git log --oneline" >> CHANGELOG.rst
+	echo "-----------------" >> CHANGELOG.rst
+	echo "" >> CHANGELOG.rst
+	git log --oneline >> CHANGELOG.rst
+	cat Dockerfile | sed 's#@DATE@#$(DATE)#' Dockerfile | sed 's#@GIT_TAG@#$(GIT_TAG)#' > Dockerfile.$(DATE)
 	docker build -f Dockerfile.$(DATE) -t tork/indigo .
-	rm Dockerfile.$(DATE)
+	rm Dockerfile.$(DATE) CHANGELOG.rst
 	$(call colorecho, "docker images")
 	docker images tork/indigo
 
