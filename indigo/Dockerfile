@@ -1,5 +1,6 @@
 FROM osrf/ros:indigo-desktop-full
 MAINTAINER Kei Okada kei.okada@gmail.com
+ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update
 
 ## for docker in docker : https://gist.github.com/henrik-muehe/6155333
@@ -142,6 +143,7 @@ RUN wget https://github.com/tork-a/ros_seminar/archive/1.0.1.tar.gz -O ~/Downloa
 
 # settings
 RUN /bin/echo -e "\n\n# ROS setup\nsource /opt/ros/$ROS_DISTRO/setup.bash\n# This file is created on $(date) from live-cd @GIT_TAG@\n#" >> ~/.bashrc
+ADD CHANGELOG.rst .
 RUN rosdep update || rosdep update
 
 # make catkin workspace

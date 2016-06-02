@@ -15,9 +15,15 @@ all: Dockerfile
 	$(call colorecho, "docker images")
 	docker images
 	$(call colorecho, "docker build")
+	cp ../CHANGELOG.rst CHANGELOG.rst
+	echo "" >> CHANGELOG.rst
+	echo "git log --oneline" >> CHANGELOG.rst
+	echo "-----------------" >> CHANGELOG.rst
+	echo "" >> CHANGELOG.rst
+	git log --oneline >> CHANGELOG.rst
 	cat Dockerfile | sed 's#@DATE@#$(DATE)#' Dockerfile | sed 's#@GIT_TAG@#$(GIT_TAG)#' > Dockerfile.$(DATE)
 	docker build -f Dockerfile.$(DATE) -t tork/indigo .
-	rm Dockerfile.$(DATE)
+	rm Dockerfile.$(DATE) CHANGELOG.rst
 	$(call colorecho, "docker images")
 	docker images tork/indigo
 
