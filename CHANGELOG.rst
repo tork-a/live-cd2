@@ -2,8 +2,8 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.4 (2016-06-03)
+------------------
 * Show version tag in meny and add CHANGELOG.rst to home directory `#7 <https://github.com/k-okada/live-cd2/issues/7>`_
 
   * add CHANGELOG.rst
