@@ -24,8 +24,12 @@ sudo sed -i 's@quiet splash --@quiet splash noprompt username=tork --@' isolinux
 sudo sed -i 's@Ubuntu@ROS Ubuntu $(git describe --abbrev=0 --tags)@' isolinux/txt.cfg
 sudo sed -i 's@/casper/vmlinuz.efi file=/cdrom/preseed/ubuntu.seed boot=casper quiet splash --@/casper/vmlinuz.efi persistent file=/cdrom/preseed/ubuntu.seed boot=casper quiet splash noprompt username=tork --@' boot/grub/grub.cfg
 sudo sed -i 's@Ubuntu@ROS Ubuntu $(git describe --abbrev=0 --tags)@' boot/grub/grub.cfg
+# check for human
 cat isolinux/txt.cfg
 cat boot/grub/grub.cfg
+# check for computers
+grep tork isolinux/txt.cfg
+grep tork boot/grub/grub.cfg
 
 cd ..
 cat <<EOF | sudo tee sort.txt
