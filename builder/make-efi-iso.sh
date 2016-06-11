@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #https://lists.ubuntu.com/archives/ubuntu-devel/2014-November/038540.html
+_THIS_DIR=$(builtin cd "`dirname "${BASH_SOURCE[0]}"`" > /dev/null && pwd)
 
 set -x
 set -e
@@ -22,8 +23,7 @@ sudo sed -i 's@^ui @#ui @' isolinux/isolinux.cfg
 # remove prompt to eject cd : http://www.pendrivelinux.com/ubuntu-remove-the-prompt-to-eject-cd/
 sudo sed -i 's@quiet\s\+splash\s\+--@noprompt username=tork --@' isolinux/txt.cfg
 sudo sed -i 's@Ubuntu@ROS Ubuntu $(git describe --abbrev=0 --tags)@' isolinux/txt.cfg
-sudo sed -i 's@/casper/vmlinuz.efi\s\+file=/cdrom/preseed/ubuntu.seed\s\+boot=casper\s\+quiet\s\+splash\s\+--@/casper/vmlinuz.efi persistent file=/cdrom/preseed/ubuntu.seed boot=casper noprompt username=tork --@' boot/grub/grub.cfg
-sudo sed -i 's@Ubuntu@ROS Ubuntu $(git describe --abbrev=0 --tags)@' boot/grub/grub.cfg
+$_THIS_DIR/update_grub_cfg.sh
 # check for human
 cat isolinux/txt.cfg
 cat boot/grub/grub.cfg
