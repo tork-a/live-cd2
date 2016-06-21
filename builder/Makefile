@@ -104,7 +104,7 @@ update-make-efi-iso-sh:
 depends.txt:
 	$(call colorecho, "get installed packages")
 	#docker run --rm tork/indigo bash -c 'echo "sudo apt-get update -qq; dpkg --get-selections | cut -d$$'"'"'\t'"'"' -f1 | xargs -r -n1 bash -c '"'"'apt-cache showpkg \$$0 | grep ubuntu.com > /dev/null && echo \$$0'"'"'" > gen_deps; bash ./gen_deps' | sed s/:amd64// | tee depends.txt
-	docker run --rm tork/indigo dpkg --get-selections | sed -e 's@\s*install$$@@g' | sed 's/:amd64//' | tee depends.txt
+	docker run --rm tork/indigo dpkg --get-selections | sed -e 's@\s*install$$@@g' | sed 's/:amd64//' | grep -v docker-engine | tee depends.txt
 
 tork-indigo.sh:
 	$(call colorecho, "get command history")

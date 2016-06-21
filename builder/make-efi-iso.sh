@@ -20,12 +20,17 @@ sudo find . -type f -exec md5sum {} \; | grep -v isolinux | grep -v md5sum.txt |
 #sed -i 's@default vesamenu.c32@default live@' isolinux/isolinux.cfg
 sudo sed -i 's@^ui @#ui @' isolinux/isolinux.cfg
 # remove prompt to eject cd : http://www.pendrivelinux.com/ubuntu-remove-the-prompt-to-eject-cd/
-sudo sed -i 's@quiet splash --@quiet splash noprompt username=tork --@' isolinux/txt.cfg
+sudo sed -i 's@quiet\s\+splash\s\+--@noprompt username=tork --@' isolinux/txt.cfg
 sudo sed -i 's@Ubuntu@ROS Ubuntu $(git describe --abbrev=0 --tags)@' isolinux/txt.cfg
-sudo sed -i 's@/casper/vmlinuz.efi file=/cdrom/preseed/ubuntu.seed boot=casper quiet splash --@/casper/vmlinuz.efi persistent file=/cdrom/preseed/ubuntu.seed boot=casper quiet splash noprompt username=tork --@' boot/grub/grub.cfg
+#sudo sed -i 's@/casper/vmlinuz.efi\s\+file=/cdrom/preseed/ubuntu.seed\s\+boot=casper\s\+quiet\s\+splash\s\+--@/casper/vmlinuz.efi persistent file=/cdrom/preseed/ubuntu.seed boot=casper noprompt username=tork --@' boot/grub/grub.cfg
+sudo sed -i 's@/casper/vmlinuz.efi\s\+file=/cdrom/preseed/ubuntu.seed\s\+boot=casper\s\+quiet\s\+splash\s\+--@/casper/vmlinuz.efi persistent file=/cdrom/preseed/ubuntu.seed boot=casper noprompt --@' boot/grub/grub.cfg
 sudo sed -i 's@Ubuntu@ROS Ubuntu $(git describe --abbrev=0 --tags)@' boot/grub/grub.cfg
+# check for human
 cat isolinux/txt.cfg
 cat boot/grub/grub.cfg
+# check for computers
+grep tork isolinux/txt.cfg
+grep persistent boot/grub/grub.cfg
 
 cd ..
 cat <<EOF | sudo tee sort.txt
