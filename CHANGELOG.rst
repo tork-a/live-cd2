@@ -2,8 +2,8 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.5 (2016-06-21)
+------------------
 * Merge pull request `#11 <https://github.com/k-okada/live-cd2/issues/11>`_ from k-okada/fix_sed2 fix "do not boot" problem on 2.2.4
   * username=tork is not required for UEFI, may be ..
   * remove docker-engiine, which will be installed from https://get.docker.com/ scripts
