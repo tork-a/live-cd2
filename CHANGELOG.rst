@@ -2,6 +2,18 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge pull request `#11 <https://github.com/k-okada/live-cd2/issues/11>`_ from k-okada/fix_sed2 fix "do not boot" problem on 2.2.4
+  * username=tork is not required for UEFI, may be ..
+  * remove docker-engiine, which will be installed from https://get.docker.com/ scripts
+  * fix typo on gnomerc settings
+  * add " in gsettigs set org.gnome...
+  * builder/make-efi-iso.sh : remove quiet/splash
+  * there is two spaces between /casper/vmlinuz.efi and file=/cdroms...
+  * builder/make-efi-iso.sh : run grep to see if sed actually executed
+* Contributors: Yuki Furuta, Kei Okada
+
 2.0.4 (2016-06-03)
 ------------------
 * Show version tag in meny and add CHANGELOG.rst to home directory `#7 <https://github.com/k-okada/live-cd2/issues/7>`_
