@@ -230,6 +230,9 @@ iso-build:
 	echo "sed -i 's@blank password@password@' /usr/share/initramfs-tools/scripts/casper-bottom/25adduser" >> config/hooks/80_change_user_name.chroot
 	echo "sed -i 's@U6aMy0wojraho@U6CjLveNVb5n.@' /usr/share/initramfs-tools/scripts/casper-bottom/25adduser" >> config/hooks/80_change_user_name.chroot
 
+	$(call colorecho, "ubiquity neeed sudo") # https://github.com/k-okada/live-cd2/issues/9
+	echo "sed -i 's@sh -c@sudo sh -c@' /usr/share/applications/ubiquity.desktop" >> config/hooks/90_ubiquity.desktop.sudo.chroot
+
 
 	## use latest kernel
 	#$(call colorecho, "use latest kernel")
