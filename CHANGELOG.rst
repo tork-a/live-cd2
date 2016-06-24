@@ -2,8 +2,8 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.0.6 (2016-06-24)
+------------------
 * Merge pull request `#13 <https://github.com/k-okada/live-cd2/issues/13>`_ from k-okada/usernamae
   * add settings to .gnoemrc has trouble, may be running gsettings before running dconf?
   * bdcd339 (username=tork is not required for UEFI, may be ..) was wrong, we need username=tork
