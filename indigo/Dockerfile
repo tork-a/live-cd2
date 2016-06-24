@@ -31,8 +31,9 @@ set-option -g prefix C-t\n\
 
 ## gnomerc
 RUN echo "# Japnese settings\n\
-gsettings set org.gnome.desktop.input-sources sources \"[('xkb', 'jp'), ('ibus', 'mozc-jp')]\"\n\
-gsettings set org.gnome.desktop.input-sources xkb-options \"['ctrl:swapcaps']\"\n\
+# add settings to .gnoemrc has trouble, may be running gsettings before running dconf in the first time?\n\
+# gsettings set org.gnome.desktop.input-sources sources \"[('xkb', 'jp'), ('ibus', 'mozc-jp')]\"\n\
+# gsettings set org.gnome.desktop.input-sources xkb-options \"['ctrl:swapcaps']\"\n\
 " >  /etc/skel/.gnomerc
 
 ## .emacs
