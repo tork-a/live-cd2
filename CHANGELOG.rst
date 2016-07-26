@@ -2,6 +2,17 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge pull request `#12 <https://github.com/k-okada/live-cd2/issues/12>`_ from k-okada/ubiquity_sudo
+  fix for ubiquity running non-root mode; add username= to kernel parameter results black screen...
+* fix : 794e129f1122a22764465ef3c3a28fb085959bd8 (comment out .gnoemrc)
+* circle.yml: run apt-get udate
+* (Due to black screen problem) Revert "bdcd339 (username=tork is not required for UEFI, may be ..) was wrong, we need username=tork"
+  This reverts commit db4363b11bde2375b8ecf108e788533c9e85a0fe.
+* fix for ubiquity running non-root mode
+* Contributors: Kei Okada
+
 2.0.6 (2016-06-24)
 ------------------
 * Merge pull request `#13 <https://github.com/k-okada/live-cd2/issues/13>`_ from k-okada/usernamae
