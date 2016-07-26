@@ -2,8 +2,8 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.1.0 (2016-07-26)
+------------------
 * Merge pull request `#12 <https://github.com/k-okada/live-cd2/issues/12>`_ from k-okada/ubiquity_sudo
   fix for ubiquity running non-root mode; add username= to kernel parameter results black screen...
 * fix : 794e129f1122a22764465ef3c3a28fb085959bd8 (comment out .gnoemrc)
