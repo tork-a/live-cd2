@@ -139,8 +139,8 @@ tork-defaults:
 tork-defaults/debian/20_tork-defaults.gschema.override:
 	$(call colorecho, "setup 20_tork-defaults.gschema.override")
 	echo "[org.gnome.desktop.input-sources]" >> tork-defaults/debian/20_tork-defaults.gschema.override
-	$(call colorecho, "gsettings set org.gnome.desktop.input-sources xkb-options ['ctrl:swapcaps']")
-	echo "xkb-options=['ctrl:swapcaps']"  >> tork-defaults/debian/20_tork-defaults.gschema.override
+	$(call colorecho, "gsettings set org.gnome.desktop.input-sources xkb-options ['ctrl:nocaps']")
+	echo "xkb-options=['ctrl:nocaps']"  >> tork-defaults/debian/20_tork-defaults.gschema.override
 
 	$(call colorecho, 'gsettings set org.gnome.desktop.input-sources sources [("xkb", "jp") ("ibus", "mozc-jp")]')
 	#echo "sources=[('xkb', 'jp'), ('ibus', 'mozc-jp')]" >> tork-defaults/debian/20_tork-defaults.gschema.override
