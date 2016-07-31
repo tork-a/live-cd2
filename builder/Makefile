@@ -201,6 +201,12 @@ iso-build:
 	$(call colorecho, "cat tork-indigo.sh >> tork-defaults/hooks/chroot")
 	cat tork-indigo.sh >> tork-defaults/hooks/chroot
 
+	$(call colorecho, "use casper for vivid")
+	## work around for casper-rw partition http://askubuntu.com/a/725709/469233
+	echo "wget http://archive.ubuntu.com/ubuntu/pool/main/c/casper/casper_1.360_amd64.deb -O /tmp/casper_1.360_amd64.deb" >> tork-defaults/hooks/chroot
+	echo "sudo dpkg -x /tmp/casper_1.360_amd64.deb /tmp/casper-src" >> tork-defaults/hooks/chroot
+	echo "sudo cp /tmp/casper-src/usr/share/initramfs-tools/scripts/casper /usr/share/initramfs-tools/scripts/casper" >> tork-defaults/hooks/chroot
+
 	$(call colorecho, "cat depends.txt >> tork-defaults/depends.txt")
 	cat depends.txt >> tork-defaults/depends.txt
 
