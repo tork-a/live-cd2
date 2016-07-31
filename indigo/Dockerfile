@@ -143,7 +143,14 @@ RUN mkdir -p ~/Downloads
 RUN wget https://github.com/tork-a/ros_seminar/archive/1.0.1.tar.gz -O ~/Downloads/ros_seminar-1.0.1.tar.gz
 
 # settings
-RUN /bin/echo -e "\n\n# ROS setup\nsource /opt/ros/$ROS_DISTRO/setup.bash\n# This file is created on $(date) from live-cd @GIT_TAG@\n#" >> ~/.bashrc
+RUN echo "\n\n"\
+"# ROS setup\n"\
+"source /opt/ros/$ROS_DISTRO/setup.bash\n"\
+"source \`catkin locate --shell-verbs\` # shell support (https://catkin-tools.readthedocs.io/en/latest/advanced/catkin_shell_verbs.html)\n"\
+"\n\n"\
+"# This file is created on $(date) from live-cd @GIT_TAG@\n"\
+"#\n"\
+ >> ~/.bashrc
 ADD CHANGELOG.rst .
 RUN rosdep update || rosdep update
 
