@@ -2,6 +2,18 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Merge pull request `#14 <https://github.com/k-okada/live-cd2/issues/14>`_ from k-okada/nocaps
+  fix problem reported from y.s. on jul/29
+* builder/Makefile: use double quote for hiredocument to escape back quote command : http://stackoverflow.com/questions/13122147/prevent-expressions-enclosed-in-backticks-from-being-evaluated-in-heredocs
+* builder/Makefile : fix caspser-rw partition workaround, see http://askubuntu.com/a/725709/469233
+* circle.yml : always run docker build
+* indigo/Dockerfile: support catkin shell-verbs
+* build/Makefile: tork-defaults/debian/20_tork-defaults.gschema.override : use nocaps instead of swapcaps, required from y.suzuki
+* bulid/Makefile : tork-defaults/debian/20_tork-defaults.gschema.override : fix typo : org.gnome.desktop.input-sour -> org.gnome.desktop.input-sources
+* Contributors: Kei Okada
+
 2.1.0 (2016-07-26)
 ------------------
 * Merge pull request `#12 <https://github.com/k-okada/live-cd2/issues/12>`_ from k-okada/ubiquity_sudo
