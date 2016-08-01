@@ -2,8 +2,8 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.1.1 (2016-08-01)
+------------------
 * Merge pull request `#14 <https://github.com/k-okada/live-cd2/issues/14>`_ from k-okada/nocaps
   fix problem reported from y.s. on jul/29
 * builder/Makefile: use double quote for hiredocument to escape back quote command : http://stackoverflow.com/questions/13122147/prevent-expressions-enclosed-in-backticks-from-being-evaluated-in-heredocs
