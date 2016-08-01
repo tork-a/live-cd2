@@ -109,7 +109,7 @@ depends.txt:
 tork-indigo.sh:
 	$(call colorecho, "get command history")
 	# http://stackoverflow.com/questions/19104847/how-to-generate-a-dockerfile-from-an-image
-	docker history --no-trunc=true tork/indigo | tr -s " " | /bin/sed -e 's,#(nop) USER \[\(.*\)\],sudo -u \1 -H -i <<EOF,' | /bin/sed -e 's,#(nop) WORKDIR \(.*\),cd \1,' | /bin/sed -e 's,#(nop) ENV \(.*\),export \1,' | /bin/sed -n -e 's,[0-9.]* [kMG]\?B *$$,,p' | sed -n -e 's,.*/bin/sh -c \(.*\),\1,p' | /bin/sed -e 's,^\(.*\)#CIRCLECI#,#CIRCLECI# \1,' | tac | sed '0,/MAINTAINER/d' | tee tork-indigo.sh
+	docker history --no-trunc=true tork/indigo | tr -s " " | sed -e 's/$$ROS_DISTRO/indigo/' | /bin/sed -e 's,#(nop) USER \[\(.*\)\],sudo -u \1 -H -i <<"EOF",' | /bin/sed -e 's,#(nop) WORKDIR \(.*\),cd \1,' | /bin/sed -e 's,#(nop) ENV \(.*\),export \1,' | /bin/sed -n -e 's,[0-9.]* [kMG]\?B *$$,,p' | sed -n -e 's,.*/bin/sh -c \(.*\),\1,p' | /bin/sed -e 's,^\(.*\)#CIRCLECI#,#CIRCLECI# \1,' | tac | sed '0,/MAINTAINER/d' | tee tork-indigo.sh
 	echo "EOF" >> tork-indigo.sh
 
 tork-defaults:
@@ -139,8 +139,8 @@ tork-defaults:
 tork-defaults/debian/20_tork-defaults.gschema.override:
 	$(call colorecho, "setup 20_tork-defaults.gschema.override")
 	echo "[org.gnome.desktop.input-sources]" >> tork-defaults/debian/20_tork-defaults.gschema.override
-	$(call colorecho, "gsettings set org.gnome.desktop.input-sourc xkb-options ['ctrl:swapcaps']")
-	echo "xkb-options=['ctrl:swapcaps']"  >> tork-defaults/debian/20_tork-defaults.gschema.override
+	$(call colorecho, "gsettings set org.gnome.desktop.input-sources xkb-options ['ctrl:nocaps']")
+	echo "xkb-options=['ctrl:nocaps']"  >> tork-defaults/debian/20_tork-defaults.gschema.override
 
 	$(call colorecho, 'gsettings set org.gnome.desktop.input-sources sources [("xkb", "jp") ("ibus", "mozc-jp")]')
 	#echo "sources=[('xkb', 'jp'), ('ibus', 'mozc-jp')]" >> tork-defaults/debian/20_tork-defaults.gschema.override
@@ -200,6 +200,12 @@ iso-build:
 	# custom from Dockerfile
 	$(call colorecho, "cat tork-indigo.sh >> tork-defaults/hooks/chroot")
 	cat tork-indigo.sh >> tork-defaults/hooks/chroot
+
+	$(call colorecho, "use casper for vivid")
+	## work around for casper-rw partition http://askubuntu.com/a/725709/469233
+	echo "wget http://archive.ubuntu.com/ubuntu/pool/main/c/casper/casper_1.360_amd64.deb -O /tmp/casper_1.360_amd64.deb" >> tork-defaults/hooks/chroot
+	echo "sudo dpkg -x /tmp/casper_1.360_amd64.deb /tmp/casper-src" >> tork-defaults/hooks/chroot
+	echo "sudo cp /tmp/casper-src/usr/share/initramfs-tools/scripts/casper /usr/share/initramfs-tools/scripts/casper" >> tork-defaults/hooks/chroot
 
 	$(call colorecho, "cat depends.txt >> tork-defaults/depends.txt")
 	cat depends.txt >> tork-defaults/depends.txt
