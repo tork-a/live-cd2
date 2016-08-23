@@ -138,10 +138,6 @@ RUN apt-get clean
 USER tork
 WORKDIR /home/tork/
 
-#
-RUN mkdir -p ~/Downloads
-RUN wget https://github.com/tork-a/ros_seminar/archive/1.0.1.tar.gz -O ~/Downloads/ros_seminar-1.0.1.tar.gz
-
 # settings
 RUN echo "\n\n"\
 "# ROS setup\n"\
@@ -170,3 +166,10 @@ RUN wstool info -t ~/catkin_ws/src
 
 # compile with catkin
 RUN cd ~/catkin_ws; . /opt/ros/$ROS_DISTRO/setup.sh; catkin build -p 1 --no-status
+
+# download seminar
+RUN mkdir -p ~/Downloads
+RUN wget https://github.com/tork-a/ros_seminar/archive/1.0.3.tar.gz -O ~/Downloads/ros_seminar-1.0.3.tar.gz
+RUN cd /tmp && tar -xvzf ~/Downloads/ros_seminar-*.tar.gz
+RUN rosdep install -y --rosdistro $ROS_DISTRO --from-paths /tmp/ros_seminar-1.0.3/ --ignore-src
+
