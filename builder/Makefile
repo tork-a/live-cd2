@@ -155,6 +155,8 @@ tork-defaults/debian/rc.local:
 	cp /etc/rc.local tork-defaults/debian/rc.local
 	$(call colorecho, "Generate the SSH keys if non-existent")
 	sed -i 's%exit 0%### Generate the SSH keys if non-existent\n[ ! -f /etc/ssh/ssh_host_dsa_key ] \&\& dpkg-reconfigure openssh-server\n\nexit 0%' tork-defaults/debian/rc.local
+	$(call colorecho, "Remove tork-defaults.list if exists")
+	sed -i 's%exit 0%### Remove tork-defaults.list if exists\n[ -f /etc/apt/sources.list.d/tork-defaults.list ] \&\& rm -f /etc/apt/sources.list.d/tork-defaults.list\n\nexit 0%' tork-defaults/debian/rc.local
 
 tork-defaults/debian/tork-defaults.install: tork-defaults/debian/20_tork-defaults.gschema.override # tork-defaults/debian/rc.local
 	$(call colorecho, "setup tork-defaults.install")
@@ -231,6 +233,9 @@ iso-build:
 	cp /etc/rc.local config/includes.chroot/etc/
 	$(call colorecho, "Generate the SSH keys if non-existent")
 	sed -i 's%^exit 0%### Generate the SSH keys if non-existent\n[ ! -f /etc/ssh/ssh_host_dsa_key ] \&\& dpkg-reconfigure openssh-server\n\nexit 0%' config/includes.chroot/etc/rc.local
+	$(call colorecho, "Remove tork-defaults.list if exists")
+	sed -i 's%^exit 0%### Remove tork-defaults.list if exists\n[ -f /etc/apt/sources.list.d/tork-defaults.list ] \&\& rm -f /etc/apt/sources.list.d/tork-defaults.list\n\nexit 0%' config/includes.chroot/etc/rc.local
+	cat config/includes.chroot/etc/rc.local
 
 	$(call colorecho, "change default password")
 	echo "sed -i 's@blank password@password@' /usr/share/initramfs-tools/scripts/casper-bottom/25adduser" >> config/hooks/80_change_user_name.chroot
