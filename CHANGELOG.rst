@@ -2,6 +2,22 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add new packages
+
+  * download 1.0.3 ros_seminar and use rosdep install to install  dependent packages
+
+* add tork (default user) to dialout group
+
+* misc changes
+
+  * rm /etc/apt/sources.list.d/ duplicates, see `#16 <https://github.com/k-okada/live-cd2/issues/16>`_
+  * circle.yml : disable cache docker
+  * ./github_release.sh : sleep 60 after aws s3 cp
+
+* Contributors: Kei Okada
+
 2.1.1 (2016-08-01)
 ------------------
 * Merge pull request `#14 <https://github.com/k-okada/live-cd2/issues/14>`_ from k-okada/nocaps
