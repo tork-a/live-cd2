@@ -2,8 +2,8 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.0 (2016-08-25)
+------------------
 * add new packages
 
   * download 1.0.3 ros_seminar and use rosdep install to install  dependent packages
