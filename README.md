@@ -1,6 +1,8 @@
 live-cd2
 ========
 
+[![CircleCI](https://circleci.com/gh/tork-a/live-cd2.svg?style=svg)](https://circleci.com/gh/tork-a/live-cd2)
+
 This is 2nd generaiton of live-cd
 
 Contents
