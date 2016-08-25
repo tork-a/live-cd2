@@ -7,7 +7,7 @@ This is 2nd generaiton of live-cd
 
 Contents
 --------
-
+```
   README.md  This file
   Makefile   Commands to create live-cd
   indigo/
@@ -16,7 +16,26 @@ Contents
       Vargantfile: Commands to setup vargant
   builder/
       Makefile   : Commands to build iso from Docker using vagrant
+```
+Burning
+-------
 
+
+  - use gparted and create partitions:
+
+     - create fat32 3379 MB  (3.2G)
+     - create ext4 with casper-rw label (for the rest spaces)
+
+  - then burn iso using `usb-creator-gtk` with enabling persistent
+  (http://askubuntu.com/questions/138356/how-do-i-get-a-live-usb-to-use-a-partition-for-persistence/181062#181062)
+
+  - Note : 14.04 has bugs on casper-src, you need  (https://github.com/tork-a/live-cd2/commit/0c1e155a803697d94fc630de3ebd512ca75d5bfe)
+    ```
+    wget http://archive.ubuntu.com/ubuntu/pool/main/c/casper/casper_1.360_amd64.deb
+    dpkg -x casper_1.360_amd64.deb casper-src
+    cp casper-src/usr/share/initramfs-tools/scripts/casper usr/share/initramfs-tools/scripts/casper
+    update-initramfs -u
+    ```
 
 
 References:
