@@ -47,7 +47,7 @@ RUN sudo apt-get install -y openssh-server apache2 supervisor
 RUN sudo mkdir -p /var/lock/apache2 /var/run/apache2 /var/run/sshd /var/log/supervisor
 
 # setup joystick
-RUN source /opt/ros/indigo/setup.bash && cp `rospack find tetris_launch`/www/joystick.html /var/www/
+RUN source /opt/ros/indigo/setup.bash && cp `rospack find tetris_launch`/www/joystick.html /var/www/html/
 
 RUN sudo apt-get install -y telnet # for debug
 
