@@ -2,8 +2,8 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.2.1 (2016-08-31)
+------------------
 * hakuto/Dockerfile: joystick.html have to install /var/www/html
 * README.md: add how to write ios to usb
 * README.md: add status badge
