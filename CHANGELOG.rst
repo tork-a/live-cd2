@@ -2,8 +2,8 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.3.0 (2016-11-01)
+------------------
 * add more pcakages, see `#23 <https://github.com/tork-a/live-cd2/issues/23>`_
 * Contributors: Kei Okada
 
