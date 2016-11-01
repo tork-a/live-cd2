@@ -125,8 +125,24 @@ RUN add-apt-repository -y ppa:yannubuntu/boot-repair && apt-get update && apt-ge
 RUN wget -qO- https://get.docker.com/ | sh
 RUN usermod -aG docker tork
 
-# inxi
+# inxi check hardware information on Linux
 RUN apt-get -y install inxi
+
+# gimp
+RUN apt-get -y install gimp
+
+# pip
+RUN apt-get -y install python-pip && pip install -U pip && pip --version
+RUN pip install -U setuptools && easy_install --version
+
+# expect-dev: /usr/bin/unbuffer
+RUN apt-get -y install expect-dev
+
+# gnuplot-x11
+RUN apt-get -y install gnuplot-x11
+
+# font-manager http://turedure-plog.blogspot.jp/2014/10/ubuntu-1404-lts.html
+RUN apt-get -y install font-manager
 
 ## clean up
 RUN apt-get clean
