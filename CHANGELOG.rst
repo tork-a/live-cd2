@@ -2,6 +2,11 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add more pcakages, see `#23 <https://github.com/tork-a/live-cd2/issues/23>`_
+* Contributors: Kei Okada
+
 2.2.1 (2016-08-31)
 ------------------
 * hakuto/Dockerfile: joystick.html have to install /var/www/html
