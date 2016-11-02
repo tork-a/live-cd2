@@ -2,8 +2,8 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.3.1 (2016-11-02)
+------------------
 * use rsync to copy iso
 * Contributors: Kei Okada
 
