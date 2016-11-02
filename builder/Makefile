@@ -79,7 +79,7 @@ build-vagrant: #depends.txt tork-indigo.sh add-apt-repository
 	$(call colorecho, "build iso on vagrant machine")
 	# location of builder is /opt/builder, see ../vagrant/Vagrantfile config.vm.synced_folder "../builder", "/opt/builder"
 	sshpass -p vagrant ssh -o StrictHostkeyChecking=no -p 22 ${VAGRANT_USERNAME}@${VAGRANT_HOSTNAME} bash -c "set -x; uname -a; set -x; hostname; export TERM=xterm; mkdir -p build; cd build; cat /opt/builder/make-efi-iso.sh; cp -r /opt/builder/* ./; ls -al; make ${BUILD_TARGET} VERBOSE=1;"
-	rsync -P --rsh="sshpass -p vagrant ssh -o StrictHostkeyChecking=no -p 22" ${VAGRANT_USERNAME}@${VAGRANT_HOSTNAME}:build/indigo-tork-*.iso .
+	rsync -P --rsh="sshpass -p vagrant ssh -o StrictHostkeyChecking=no -p 22" ${VAGRANT_USERNAME}@${VAGRANT_HOSTNAME}:build/*.iso .
 
 ###
 ###
