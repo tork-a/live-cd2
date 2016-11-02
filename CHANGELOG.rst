@@ -2,8 +2,8 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.3.2 (2016-11-02)
+------------------
 * copy all iso files
 * Contributors: Kei Okada
 
