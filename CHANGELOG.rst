@@ -2,6 +2,11 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* use rsync to copy iso
+* Contributors: Kei Okada
+
 2.3.0 (2016-11-01)
 ------------------
 * add more pcakages, see `#23 <https://github.com/tork-a/live-cd2/issues/23>`_
