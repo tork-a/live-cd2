@@ -31,6 +31,8 @@ Burning
 
   - Boot burned usb and run `sudo update-initramfs -u` and shotdown, better to disable wifi (looking for wifi goes black screen during boot up)
   
+    - You can run burned sub in virtual machine : `sudo kvm --hdb  /dev/sdb -m 2G`
+
     - Note : 14.04 has bugs on casper-src, you need  (https://github.com/tork-a/live-cd2/commit/0c1e155a803697d94fc630de3ebd512ca75d5bfe)
       ```
     wget http://archive.ubuntu.com/ubuntu/pool/main/c/casper/casper_1.360_amd64.deb
