@@ -23,7 +23,8 @@ Burning
 
   - Use gparted and create partitions:
 
-     - create fat32 3379 MB  (3.2G)
+     - create fat32 3686 MB  (3.6G)
+
      - create ext4 with casper-rw label (for the rest spaces)
 
   - then burn iso using `usb-creator-gtk` with enabling persistent
