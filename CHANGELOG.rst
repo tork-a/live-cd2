@@ -2,8 +2,8 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+2.3.3 (2016-12-07)
+------------------
 * indigo/Dockerfile: add mkusb `#27 <https://github.com/tork-a/live-cd2/issues/27>`_
 
 * README.md `#26 <https://github.com/tork-a/live-cd2/issues/26>`_
