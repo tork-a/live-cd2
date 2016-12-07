@@ -2,6 +2,20 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* indigo/Dockerfile: add mkusb `#27 <https://github.com/tork-a/live-cd2/issues/27>`_
+
+* README.md `#26 <https://github.com/tork-a/live-cd2/issues/26>`_
+
+  * change to use mkusb
+  * we need 3.6G to burn usb with casper-rw
+  * add how to run kvm
+  * clean up layout
+  * fix typo
+
+* Contributors: Kei Okada
+
 2.3.2 (2016-11-02)
 ------------------
 * copy all iso files
