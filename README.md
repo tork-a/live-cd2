@@ -20,6 +20,7 @@ Contents
 Burning
 -------
 
+<!--
 
   - Use gparted and create partitions:
 
@@ -44,7 +45,20 @@ Burning
 
   - Insert the USB and remove `casper-rw` file from you fat32 pertition
 
+-->
 
+
+  - Use mkusb to burn persistent live cd:
+
+    - Note that you have to use BIOS (not UEFI) booted computer to start `mkusbe`
+
+    - http://askubuntu.com/questions/397481/how-to-make-a-persistent-live-ubuntu-usb-with-more-than-4gb/753163#753163
+
+     - `sudo add-apt-repository ppa:mkusb/ppa  # and press Enter`
+     - `sudo apt-get update`
+     - `sudo apt-get install mkusb usb-pack-efi`
+     - `sudo -H mkusb indigo-tork-*.iso p` # source file and persistence via parameters
+     - Choose 80% for persistent space on 8G memory will make 512M free pertition on Windows and 4G persitent disk strage for Ubuntu
 
 References:
 - http://github.com/mbentley/overclockix
