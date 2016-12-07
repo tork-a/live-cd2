@@ -20,10 +20,12 @@ Contents
 Burning
 -------
 
+<!--
 
   - Use gparted and create partitions:
 
-     - create fat32 3379 MB  (3.2G)
+     - create fat32 3686 MB  (3.6G)
+
      - create ext4 with casper-rw label (for the rest spaces)
 
   - then burn iso using `usb-creator-gtk` with enabling persistent
@@ -31,16 +33,32 @@ Burning
 
   - Boot burned usb and run `sudo update-initramfs -u` and shotdown, better to disable wifi (looking for wifi goes black screen during boot up)
   
-  - Insert the USb and emove `caspwer-rw` file from you fat32 pertition
+    - You can run burned sub in virtual machine : `sudo kvm --hdb  /dev/sdb -m 2G`
 
-  - Note : 14.04 has bugs on casper-src, you need  (https://github.com/tork-a/live-cd2/commit/0c1e155a803697d94fc630de3ebd512ca75d5bfe)
-    ```
+    - Note : 14.04 has bugs on casper-src, you need  (https://github.com/tork-a/live-cd2/commit/0c1e155a803697d94fc630de3ebd512ca75d5bfe)
+      ```
     wget http://archive.ubuntu.com/ubuntu/pool/main/c/casper/casper_1.360_amd64.deb
     dpkg -x casper_1.360_amd64.deb casper-src
-    cp casper-src/usr/share/initramfs-tools/scripts/casper usr/share/initramfs-tools/scripts/casper
+    cp casper-src/usr/share/initramfs-tools/scripts/casper /usr/share/initramfs-tools/scripts/casper
     update-initramfs -u
-    ```
+      ```
 
+  - Insert the USB and remove `casper-rw` file from you fat32 pertition
+
+-->
+
+
+  - Use mkusb to burn persistent live cd:
+
+    - Note that you have to use BIOS (not UEFI) booted computer to start `mkusbe`
+
+    - http://askubuntu.com/questions/397481/how-to-make-a-persistent-live-ubuntu-usb-with-more-than-4gb/753163#753163
+
+     - `sudo add-apt-repository ppa:mkusb/ppa  # and press Enter`
+     - `sudo apt-get update`
+     - `sudo apt-get install mkusb usb-pack-efi`
+     - `sudo -H mkusb indigo-tork-*.iso p` # source file and persistence via parameters
+     - Choose 80% for persistent space on 8G memory will make 512M free pertition on Windows and 4G persitent disk strage for Ubuntu
 
 References:
 - http://github.com/mbentley/overclockix
