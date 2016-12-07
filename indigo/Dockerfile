@@ -121,6 +121,9 @@ RUN apt-get -y install software-properties-common
 # boot repair
 RUN add-apt-repository -y ppa:yannubuntu/boot-repair && apt-get update && apt-get -y install boot-repair
 
+# mkusb
+RUN add-apt-repository -y ppa:mkusb/ppa && apt-get update && apt-get -y install mkusb usb-pack-efi
+
 # doocker (this create new groups, so it should be later than creating ubuntu user process)
 RUN wget -qO- https://get.docker.com/ | sh
 RUN usermod -aG docker tork
