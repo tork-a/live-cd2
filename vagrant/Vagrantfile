@@ -28,7 +28,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       #aws.ami               = "ami-08111162" # Amazon Linux AMI 2016.03.0 (HVM), SSD Volume Type
       aws.ami               = "ami-fce3c696" # Ubuntu Server 14.04 LTS (HVM), SSD Volume Type
       aws.block_device_mapping = [{ 'DeviceName' => '/dev/sda1',
-                                    'Ebs.VolumeSize' => 40,
+                                    'Ebs.VolumeSize' => 80,
                                     'Ebs.VolumeType' => 'gp2', # use SSD
                                     'Ebs.DeleteOnTermination' => 'true'}]
 
