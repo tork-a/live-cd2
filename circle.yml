@@ -51,16 +51,21 @@ dependencies:
     - cd vagrant && vagrant status $VM_TYPE
     - cd vagrant && vagrant ssh $VM_TYPE -- ifconfig
     - cd vagrant && vagrant ssh $VM_TYPE -- cp /opt/docker/tork-indigo.tar .
+    - cd vagrant && vagrant ssh $VM_TYPE -- cp /opt/docker/tork-kinetic.tar .
     - cd vagrant && vagrant ssh $VM_TYPE -- ls -al
     - cd vagrant && vagrant ssh $VM_TYPE -- bash -c \"ls -al\; docker images\; docker load --input tork-indigo.tar\"
     - cd vagrant && while ! vagrant ssh $VM_TYPE -- docker images | grep tork/indigo; do vagrant ssh $VM_TYPE -- bash -c \"ls -al\; docker images\; docker load --input tork-indigo.tar\"; done
+    - cd vagrant && vagrant ssh $VM_TYPE -- bash -c \"ls -al\; docker images\; docker load --input tork-kinetic.tar\"
+    - cd vagrant && while ! vagrant ssh $VM_TYPE -- docker images | grep tork/kinetic; do vagrant ssh $VM_TYPE -- bash -c \"ls -al\; docker images\; docker load --input tork-kinetic.tar\"; done
     - cd vagrant && vagrant ssh $VM_TYPE -- docker images
 
 test:
   override:
     # check docker
-    - echo "Running Tests on Docker"
+    - echo "Running Tests on Docker/indigo"
     - cd indigo && make test
+    - echo "Running Tests on Docker/kinetic"
+    - cd kinetic && make test
     # check apps
     - echo "Building and Running Tests for Hakuto apps"
     - cd hakuto && make all && make test
