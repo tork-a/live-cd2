@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #https://lists.ubuntu.com/archives/ubuntu-devel/2014-November/038540.html
+ROS_DISTRO=${1:-indigo}
 
 set -x
 set -e
@@ -40,4 +41,4 @@ cat <<EOF | sudo tee sort.txt
 70 preseed/
 EOF
 
-sudo xorriso -as mkisofs -volid "Ubuntu 14.04 ja amd64" -o indigo-tork-`date +%Y%m%d_%H%M%S`.iso -rock -omit-version-number -disable-deep-relocation -joliet -isohybrid-mbr /usr/lib/syslinux/isohdpfx.bin -c isolinux/boot.cat -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat -isohybrid-apm-hfsplus --sort-weight-patterns sort.txt binary/
+sudo xorriso -as mkisofs -volid "Ubuntu/ROS ja amd64" -o $ROS_DISTRO-tork-`date +%Y%m%d_%H%M%S`.iso -rock -omit-version-number -disable-deep-relocation -joliet -isohybrid-mbr /usr/lib/syslinux/isohdpfx.bin -c isolinux/boot.cat -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat -isohybrid-apm-hfsplus --sort-weight-patterns sort.txt binary/
