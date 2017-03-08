@@ -45,7 +45,8 @@ iso-build-debug:
 ###
 setup-local:
 	sudo apt-get install -y git build-essential fakeroot debhelper gdebi live-build ubuntu-defaults-builder p7zip-full
-	7z x -y -o/tmp/iso ~/Downloads/ubuntu-14.04.4-desktop-amd64.iso
+	7z x -y -o/tmp/iso ~/Downloads/ubuntu-14.04.5-desktop-amd64.iso
+	7z x -y -o/tmp/iso ~/Downloads/ubuntu-16.04.2-desktop-amd64.iso
 	make clean
 
 build-local:
