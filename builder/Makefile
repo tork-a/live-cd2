@@ -112,9 +112,11 @@ depends.txt:
 
 tork-docker.sh:
 	$(call colorecho, "get command history")
+	docker history --no-trunc=true tork/${ROS_DISTRO} | tr -s " "
 	# http://stackoverflow.com/questions/19104847/how-to-generate-a-dockerfile-from-an-image
 	docker history --no-trunc=true tork/${ROS_DISTRO} | tr -s " " | sed -e 's/$$ROS_DISTRO/${ROS_DISTRO}/g' | /bin/sed -e 's,#(nop) USER \[\(.*\)\],sudo -u \1 -H -i <<"EOF",' | /bin/sed -e 's,#(nop) WORKDIR \(.*\),cd \1,' | /bin/sed -e 's,#(nop) ENV \(.*\),export \1,' | /bin/sed -n -e 's,[0-9.]* [kMG]\?B *$$,,p' | sed -n -e 's,.*/bin/sh -c \(.*\),\1,p' | /bin/sed -e 's,^\(.*\)#CIRCLECI#,#CIRCLECI# \1,' | tac | sed '0,/MAINTAINER/d' | tee tork-docker.sh
 	echo "EOF" >> tork-docker.sh
+	cat tork-docker.sh
 
 tork-defaults:
 	$(call colorecho, "template tork-defaults files")
