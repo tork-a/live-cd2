@@ -71,16 +71,18 @@ test:
     - cd hakuto && make all && make test
     # build iso
     - echo "Running ISO Builder"
-    - cd builder && VM_TYPE=$VM_TYPE make && ls -al binary.hybrid.iso
+    - cd builder && VM_TYPE=$VM_TYPE ROS_DISTRO=indigo  make && ls -al binary.hybrid.iso
+    - cd builder && VM_TYPE=$VM_TYPE ROS_DISTRO=kinetic make && ls -al binary.hybrid.iso
     # test iso
     - echo "Running Test on ISO "
     - cd vagrant && vagrant ssh $VM_TYPE -- make -C /vagrant install-vbox
-    - cd vagrant && vagrant ssh $VM_TYPE -- make -C build iso-test # build-vagrant copy /opt/builder to build
+    - cd vagrant && vagrant ssh $VM_TYPE -- make -C build iso-test ROS_DISTRO=indigo # build-vagrant copy /opt/builder to build
+    - cd vagrant && vagrant ssh $VM_TYPE -- make -C build iso-test ROS_DISTRO=kinetic
 
   post:
     # copy results
     - cd vagrant && vagrant ssh $VM_TYPE -- df -h
-    - cp builder/indigo-tork-*.iso $CIRCLE_ARTIFACTS
+    - cp builder/*-tork-*.iso $CIRCLE_ARTIFACTS
     # stop vagrant
     - cd vagrant && make clean
 

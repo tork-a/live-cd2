@@ -322,6 +322,7 @@ clean:
 	sudo rm -fr tork-defaults*
 
 help:
+	@echo "iso builder for ${ROS_DISTRO}"
 	@echo "docker-build: build docker image"
 	@echo "docker-run:   run docker image"
 	@echo "iso-build:    build iso image"
