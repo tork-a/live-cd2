@@ -73,6 +73,7 @@ test:
     - echo "Running ISO Builder"
     - cd builder && VM_TYPE=$VM_TYPE ROS_DISTRO=indigo  make && ls -al binary.hybrid.iso
     - cd builder && VM_TYPE=$VM_TYPE ROS_DISTRO=kinetic make && ls -al binary.hybrid.iso
+    - ls -al builder/*.iso
     # test iso
     - echo "Running Test on ISO "
     - cd vagrant && vagrant ssh $VM_TYPE -- make -C /vagrant install-vbox
@@ -82,6 +83,7 @@ test:
   post:
     # copy results
     - cd vagrant && vagrant ssh $VM_TYPE -- df -h
+    - ls -al builder/
     - cp builder/*-tork-*.iso $CIRCLE_ARTIFACTS
     # stop vagrant
     - cd vagrant && make clean
