@@ -87,7 +87,7 @@ setup-vagrant:
 build-vagrant: #depends.txt tork-docker.sh add-apt-repository
 	$(call colorecho, "build iso on vagrant machine")
 	# location of builder is /opt/builder, see ../vagrant/Vagrantfile config.vm.synced_folder "../builder", "/opt/builder"
-	sshpass -p vagrant ssh -o StrictHostkeyChecking=no -p 22 ${VAGRANT_USERNAME}@${VAGRANT_HOSTNAME} bash -c "set -x; uname -a; set -x; hostname; export TERM=xterm; mkdir -p build; cd build; cat /opt/builder/make-efi-iso.sh; cp -r /opt/builder/* ./; ls -al; rm -fr *.iso tork-docker.sh depends.txt tork-defaults; make ${BUILD_TARGET} VERBOSE=1 ROS_DISTRO=${ROS_DISTRO} RELEASE=${RELEASE};"
+	sshpass -p vagrant ssh -o StrictHostkeyChecking=no -p 22 ${VAGRANT_USERNAME}@${VAGRANT_HOSTNAME} bash -c "set -x; uname -a; set -x; hostname; export TERM=xterm; mkdir -p build; cd build; cat /opt/builder/make-efi-iso.sh; cp -r /opt/builder/* ./; ls -al; make clean ${BUILD_TARGET} VERBOSE=1 ROS_DISTRO=${ROS_DISTRO} RELEASE=${RELEASE};"
 	rsync -P --rsh="sshpass -p vagrant ssh -o StrictHostkeyChecking=no -p 22" ${VAGRANT_USERNAME}@${VAGRANT_HOSTNAME}:build/*.iso .
 
 ###
