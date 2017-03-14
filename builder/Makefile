@@ -65,7 +65,12 @@ endif
 ifeq (${ROS_DISTRO},"")
     ROS_DISTRO=indigo
 endif
-
+ifeq (${ROS_DISTRO},indigo)
+    RELEASE=trusty
+endif
+ifeq (${ROS_DISTRO},kinetic)
+    RELEASE=xenial
+endif
 setup-vagrant:
 	$(call colorecho, "docker info on host machine")
 	docker -H tcp://:2375 info
@@ -82,7 +87,7 @@ setup-vagrant:
 build-vagrant: #depends.txt tork-docker.sh add-apt-repository
 	$(call colorecho, "build iso on vagrant machine")
 	# location of builder is /opt/builder, see ../vagrant/Vagrantfile config.vm.synced_folder "../builder", "/opt/builder"
-	sshpass -p vagrant ssh -o StrictHostkeyChecking=no -p 22 ${VAGRANT_USERNAME}@${VAGRANT_HOSTNAME} bash -c "set -x; uname -a; set -x; hostname; export TERM=xterm; mkdir -p build; cd build; cat /opt/builder/make-efi-iso.sh; cp -r /opt/builder/* ./; ls -al; rm -fr *.iso tork-docker.sh depends.txt tork-defaults; make ${BUILD_TARGET} VERBOSE=1 ROS_DISTRO=${ROS_DISTRO};"
+	sshpass -p vagrant ssh -o StrictHostkeyChecking=no -p 22 ${VAGRANT_USERNAME}@${VAGRANT_HOSTNAME} bash -c "set -x; uname -a; set -x; hostname; export TERM=xterm; mkdir -p build; cd build; cat /opt/builder/make-efi-iso.sh; cp -r /opt/builder/* ./; ls -al; rm -fr *.iso tork-docker.sh depends.txt tork-defaults; make ${BUILD_TARGET} VERBOSE=1 ROS_DISTRO=${ROS_DISTRO} RELEASE=${RELEASE};"
 	rsync -P --rsh="sshpass -p vagrant ssh -o StrictHostkeyChecking=no -p 22" ${VAGRANT_USERNAME}@${VAGRANT_HOSTNAME}:build/*.iso .
 
 ###
@@ -227,7 +232,7 @@ iso-build:
 	#cat `which ubuntu-defaults-image` | sed 's@lb config@lb config username=username hostname=ros-indigo@' | sed 's@^\(.*lb build.*\)$$@echo \1 > tork-defaults-build@'> tork-defaults-config
 	cat `which ubuntu-defaults-image` | sed 's@^\(.*lb build.*\)$$@echo \1 > tork-defaults-build@'> tork-defaults-config
 	chmod u+x ./tork-defaults-config
-	./tork-defaults-config --package tork-defaults_0.1_all.deb --components main,restricted,universe,multiverse # --ppa xorg-edgers/ppa
+	./tork-defaults-config --release ${RELEASE} --package tork-defaults_0.1_all.deb --components main,restricted,universe,multiverse # --ppa xorg-edgers/ppa
 
 	# add-apt-repository generate fiels in archvies, since lb config cleans config/archives
 	$(call colorecho, "make add-apt-repository")
@@ -322,7 +327,7 @@ clean:
 	sudo rm -fr tork-defaults*
 
 help:
-	@echo "iso builder for ${ROS_DISTRO}"
+	@echo "iso builder for ${ROS_DISTRO}/${RELEASE}"
 	@echo "docker-build: build docker image"
 	@echo "docker-run:   run docker image"
 	@echo "iso-build:    build iso image"
