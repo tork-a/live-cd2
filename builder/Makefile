@@ -232,6 +232,10 @@ iso-build:
 	#cat `which ubuntu-defaults-image` | sed 's@lb config@lb config username=username hostname=ros-indigo@' | sed 's@^\(.*lb build.*\)$$@echo \1 > tork-defaults-build@'> tork-defaults-config
 	cat `which ubuntu-defaults-image` | sed 's@^\(.*lb build.*\)$$@echo \1 > tork-defaults-build@'> tork-defaults-config
 	chmod u+x ./tork-defaults-config
+	sudo sed -i 's@set -e@#set -e\nset -x@' tork-defaults-config
+	cat tork-defaults-config
+	sudo sed -i 's@set -e@#set -e\nset -x@' /usr/lib/live/build/lb_chroot_archives
+	cat /usr/lib/live/build/lb_chroot_archives
 	./tork-defaults-config --release ${RELEASE} --package tork-defaults_0.1_all.deb --components main,restricted,universe,multiverse # --ppa xorg-edgers/ppa
 
 	# add-apt-repository generate fiels in archvies, since lb config cleans config/archives
