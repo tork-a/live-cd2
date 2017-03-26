@@ -62,7 +62,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         echo "$(ifconfig | grep eth0 -A 1  | sed -n 's@.*inet addr:\\([0-9.]*\\)*.*@\\1@p') $(hostname)" >> /etc/hosts
         cat /etc/hosts
         apt-get update
-        apt-get install -y git build-essential fakeroot debhelper gdebi live-build
+        apt-get install -y git build-essential fakeroot debhelper gdebi live-build syslinux-utils
         apt-get install -y ubuntu-defaults-builder
         while ! docker --version ; do wget -qO- https://get.docker.com/ | sh ; done
         usermod -aG docker vagrant
