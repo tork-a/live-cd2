@@ -240,6 +240,8 @@ iso-build:
 	cat tork-defaults-config
 	sudo sed -i 's@set -e@#set -e\nset -x@' /usr/lib/live/build/lb_chroot_archives
 	cat /usr/lib/live/build/lb_chroot_archives
+	sudo sed -i 's@set -e@#set -e\nset -x@' /usr/lib/live/build/lb_chroot_install-packages
+	cat /usr/lib/live/build/lb_chroot_install-packages
 	./tork-defaults-config --release ${RELEASE} --package tork-defaults_0.1_all.deb --components main,restricted,universe,multiverse # --ppa xorg-edgers/ppa
 
 	# add-apt-repository generate fiels in archvies, since lb config cleans config/archives
