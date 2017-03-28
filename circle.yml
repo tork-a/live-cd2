@@ -84,7 +84,8 @@ test:
     # copy results
     - cd vagrant && vagrant ssh $VM_TYPE -- df -h
     - ls -al builder/
-    - cp builder/*-tork-*.iso $CIRCLE_ARTIFACTS
+    - cp builder/indigo-tork-*.iso $CIRCLE_ARTIFACTS
+    - cp builder/kinetic-tork-*.iso $CIRCLE_ARTIFACTS
     # stop vagrant
     - cd vagrant && make clean
 
