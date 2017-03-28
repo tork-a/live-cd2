@@ -87,6 +87,7 @@ test:
     - echo $CIRCLE_ARTIFACTS
     - cp builder/indigo-tork-*.iso $CIRCLE_ARTIFACTS
     - cp builder/kinetic-tork-*.iso $CIRCLE_ARTIFACTS
+    - ls $CIRCLE_ARTIFACTS
     # stop vagrant
     - cd vagrant && make clean
 
