@@ -243,6 +243,7 @@ iso-build:
 	sudo sed -i 's@set -e@#set -e\nset -x@' /usr/lib/live/build/lb_chroot_install-packages
 	cat /usr/lib/live/build/lb_chroot_install-packages
 	./tork-defaults-config --release ${RELEASE} --package tork-defaults_0.1_all.deb --components main,restricted,universe,multiverse # --ppa xorg-edgers/ppa
+	test "${RELEASE}" = "trusty" && sed -i 's@-hwe-16.04@@' config/chroot config/package-lists/* || echo "OK" # -hwe-16.04 is not available on indigo/trusty
 
 	# add-apt-repository generate fiels in archvies, since lb config cleans config/archives
 	$(call colorecho, "make add-apt-repository")
