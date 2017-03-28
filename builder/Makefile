@@ -280,7 +280,7 @@ iso-build:
 
 	# https://lists.ubuntu.com/archives/ubuntu-devel/2014-November/038540.html
 	$(call colorecho, "EFI hack")
-	./make-efi-iso.sh
+	./make-efi-iso.sh ${ROS_DISTRO}
 
 iso-run:
 	$(call colorecho, "run ${ROS_DISTRO}.tork.iso with kvm")
