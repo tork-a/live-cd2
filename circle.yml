@@ -85,7 +85,7 @@ test:
     - cd vagrant && vagrant ssh $VM_TYPE -- df -h
     - ls -al builder/
     - ls -al $CIRCLE_ARTIFACTS
-    - zip $CIRCLE_ARTIFACTS/tork-iso.zip builder/*-tork-*.iso
+    - (cd builder; zip - *-tork-*.iso) > $CIRCLE_ARTIFACTS/tork-iso.zip
     - ls -al $CIRCLE_ARTIFACTS
     - zip -sf $CIRCLE_ARTIFACTS/tork-iso.zip
     # stop vagrant
@@ -95,6 +95,7 @@ deployment:
   release:
     tag: /[0-9]+(\.[0-9]+)*/
     commands:
+      - unzip -o -d release $CIRCLE_ARTIFACTS/tork-iso.zip
       - ./.github_release.sh
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push tork/indigo

@@ -12,7 +12,7 @@ echo "  oauth_token: $GITHUB_ACCESS_TOKEN" >> ~/.config/hub
 
 set -x
 csplit CHANGELOG.rst '/^------------/' '{*}'
-for iso in $CIRCLE_ARTIFACTS/*.iso ; do
+for iso in release/*.iso ; do
     filename=`basename $iso .iso`-${CIRCLE_TAG//./_}.iso
     aws s3 cp $iso s3://live-cd2/$filename  --acl public-read
     hub release; sleep 10
