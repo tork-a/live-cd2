@@ -127,10 +127,10 @@ tork-defaults:
 	$(call colorecho, "template tork-defaults files")
 	ubuntu-defaults-template tork-defaults
 
-	$(call colorecho, "add set -x to chroot")
-	echo "set -x" >> tork-defaults/hooks/chroot
-	$(call colorecho, "add set -e to chroot")
-	echo "set -e" >> tork-defaults/hooks/chroot
+	# $(call colorecho, "add set -x to chroot")
+	# echo "set -x" >> tork-defaults/hooks/chroot
+	# $(call colorecho, "add set -e to chroot")
+	# echo "set -e" >> tork-defaults/hooks/chroot
 	$(call colorecho, "setup i18n/language.txt")
 	echo "en" >> tork-defaults/i18n/language.txt
 	echo "ja" >> tork-defaults/i18n/language.txt
