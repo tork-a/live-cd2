@@ -182,7 +182,7 @@ RUN rosdep install -y --rosdistro $ROS_DISTRO --from-paths ~/catkin_ws/src --ign
 RUN wstool info -t ~/catkin_ws/src
 
 # compile with catkin
-RUN cd ~/catkin_ws; . /opt/ros/$ROS_DISTRO/setup.sh; catkin build -p 1 --no-status
+RUN cd ~/catkin_ws; . /opt/ros/$ROS_DISTRO/setup.sh; catkin_make
 
 # download seminar
 RUN mkdir -p ~/Downloads
