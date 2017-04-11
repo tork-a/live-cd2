@@ -189,7 +189,7 @@ RUN cd ~/catkin_ws; . /opt/ros/$ROS_DISTRO/setup.sh; catkin_make
 
 # download seminar
 RUN mkdir -p ~/Downloads
-RUN wget https://github.com/tork-a/ros_seminar/archive/1.0.3.tar.gz -O ~/Downloads/ros_seminar-1.0.3.tar.gz
-RUN cd /tmp && tar -xvzf ~/Downloads/ros_seminar-*.tar.gz
-### RUN rosdep install -y --rosdistro $ROS_DISTRO --from-paths /tmp/ros_seminar-1.0.3/ --ignore-src ## some package is not released on kinetic, [pr2_controller_manager], [libuvc_camera], [nextage_ros_bridge]
+RUN wget https://github.com/tork-a/ros_seminar/archive/1.1.0.tar.gz -O ~/Downloads/ros_seminar-1.1.0.tar.gz
+RUN mkdir -p /tmp/ros_seminar && cd /tmp/ros_seminar && tar -xvzf ~/Downloads/ros_seminar-*.tar.gz --strip 1
+RUN rosdep install -r -y --rosdistro $ROS_DISTRO --from-paths /tmp/ros_seminar --ignore-src ## some package is not released on kinetic, [pr2_controller_manager], [libuvc_camera], [nextage_ros_bridge]
 
