@@ -232,7 +232,7 @@ iso-build:
 	cd tork-defaults; dpkg-buildpackage -us -uc
 
 	## ubuntu-defaults-image
-	$(call colorecho, "run ubuntu-defaults-image (config part)")
+	$(call colorecho, "run ubuntu-defaults-image \(config part\)")
 	#cat `which ubuntu-defaults-image` | sed 's@lb config@lb config username=username hostname=ros-indigo@' | sed 's@^\(.*lb build.*\)$$@echo \1 > tork-defaults-build@'> tork-defaults-config
 	cat `which ubuntu-defaults-image` | sed 's@^\(.*lb build.*\)$$@echo \1 > tork-defaults-build@'> tork-defaults-config
 	# chmod u+x ./tork-defaults-config
