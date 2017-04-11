@@ -237,7 +237,7 @@ iso-build:
 	cat `which ubuntu-defaults-image` | sed 's@^\(.*lb build.*\)$$@echo \1 > tork-defaults-build@'> tork-defaults-config
 	# chmod u+x ./tork-defaults-config
 	# sudo sed -i '0,/set -e/s//#set -e\nset -x/' tork-defaults-config
-	# cat tork-defaults-config
+	cat tork-defaults-config
 	# sudo sed -i '0,/set -e/s//#set -e\nset -x/' /usr/lib/live/build/lb_chroot_archives
 	# cat /usr/lib/live/build/lb_chroot_archives
 	# sudo sed -i '0,/set -e/s//#set -e\nset -x/' /usr/lib/live/build/lb_chroot_install-packages
