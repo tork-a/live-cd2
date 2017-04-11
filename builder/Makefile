@@ -236,12 +236,12 @@ iso-build:
 	#cat `which ubuntu-defaults-image` | sed 's@lb config@lb config username=username hostname=ros-indigo@' | sed 's@^\(.*lb build.*\)$$@echo \1 > tork-defaults-build@'> tork-defaults-config
 	cat `which ubuntu-defaults-image` | sed 's@^\(.*lb build.*\)$$@echo \1 > tork-defaults-build@'> tork-defaults-config
 	# chmod u+x ./tork-defaults-config
-	# sudo sed -i '0,/set -e/s//#set -e\nset -x/' tork-defaults-config
+	sudo sed -i '0,/set -e/s//#set -e\nset -x/' tork-defaults-config
 	cat tork-defaults-config
-	# sudo sed -i '0,/set -e/s//#set -e\nset -x/' /usr/lib/live/build/lb_chroot_archives
-	# cat /usr/lib/live/build/lb_chroot_archives
-	# sudo sed -i '0,/set -e/s//#set -e\nset -x/' /usr/lib/live/build/lb_chroot_install-packages
-	# cat /usr/lib/live/build/lb_chroot_install-packages
+	sudo sed -i '0,/set -e/s//#set -e\nset -x/' /usr/lib/live/build/lb_chroot_archives
+	cat /usr/lib/live/build/lb_chroot_archives
+	sudo sed -i '0,/set -e/s//#set -e\nset -x/' /usr/lib/live/build/lb_chroot_install-packages
+	cat /usr/lib/live/build/lb_chroot_install-packages
 	sh -x ./tork-defaults-config --release ${RELEASE} --package tork-defaults_0.1_all.deb --components main,restricted,universe,multiverse # --ppa xorg-edgers/ppa
 	test "${RELEASE}" = "trusty" && sed -i 's@-hwe-16.04@@' config/chroot config/package-lists/* || echo "OK" # -hwe-16.04 is not available on indigo/trusty
 
