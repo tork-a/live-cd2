@@ -144,6 +144,9 @@ RUN apt-get -y install expect-dev
 # font-manager http://turedure-plog.blogspot.jp/2014/10/ubuntu-1404-lts.html
 RUN apt-get -y install font-manager
 
+# json parser
+RUN apt-get -y install jq
+
 ## clean up
 RUN apt-get clean
 
@@ -186,7 +189,7 @@ RUN cd ~/catkin_ws; . /opt/ros/$ROS_DISTRO/setup.sh; catkin_make
 
 # download seminar
 RUN mkdir -p ~/Downloads
-RUN wget https://github.com/tork-a/ros_seminar/archive/1.1.0.tar.gz -O ~/Downloads/ros_seminar-1.1.0.tar.gz
+RUN TAG=$(curl --retry 10 https://api.github.com/repos/tork-a/ros_seminar/releases/latest -s | jq .tag_name -r) sh -c "wget https://github.com/tork-a/ros_seminar/archive/\$TAG.tar.gz -O ~/Downloads/ros_seminar-\$TAG.tar.gz"
 RUN mkdir -p /tmp/ros_seminar && cd /tmp/ros_seminar && tar -xvzf ~/Downloads/ros_seminar-*.tar.gz --strip 1
 RUN rosdep install -y --rosdistro $ROS_DISTRO --from-paths /tmp/ros_seminar --ignore-src
 
