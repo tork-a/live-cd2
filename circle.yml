@@ -68,7 +68,7 @@ test:
     - cd kinetic && make test
     # check apps
     - echo "Building and Running Tests for Hakuto apps"
-    - cd hakuto && make all && make test
+    ##- cd hakuto && make all && make test
     # build iso
     - echo "Running ISO Builder"
     - cd builder && VM_TYPE=$VM_TYPE ROS_DISTRO=indigo  make && ls -al binary.hybrid.iso
@@ -85,9 +85,10 @@ test:
     - cd vagrant && vagrant ssh $VM_TYPE -- df -h
     - ls -al builder/
     - ls -al $CIRCLE_ARTIFACTS
-    - (cd builder; zip - *-tork-*.iso) > $CIRCLE_ARTIFACTS/tork-iso.zip
+    ##- (cd builder; zip - *-tork-*.iso) > $CIRCLE_ARTIFACTS/tork-iso.zip
+    - cp builder/*-tork-*.iso $CIRCLE_ARTIFACTS
     - ls -al $CIRCLE_ARTIFACTS
-    - zip -sf $CIRCLE_ARTIFACTS/tork-iso.zip
+    ##- zip -sf $CIRCLE_ARTIFACTS/tork-iso.zip
     # stop vagrant
     - cd vagrant && make clean
 
@@ -95,7 +96,8 @@ deployment:
   release:
     tag: /[0-9]+(\.[0-9]+)*/
     commands:
-      - unzip -o -d release $CIRCLE_ARTIFACTS/tork-iso.zip
+      ##- unzip -o -d release $CIRCLE_ARTIFACTS/tork-iso.zip
+      - mkdir -p release/ && cp $CIRCLE_ARTIFACTS/*.iso release/
       - ./.github_release.sh
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push tork/indigo
