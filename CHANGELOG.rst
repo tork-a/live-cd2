@@ -2,6 +2,55 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Add kinetic(`#30 <https://github.com/tork-a/live-cd2/issues/30>`_)
+  * copy url to s3.txt
+  * enable hakuto and send to s3 when suceeded
+  * try to upload .iso, because uploading to artifacts has 3G limit   due to AWS S3, and also stop hakut, gzserver is existing in memory-usage.txt
+  * get latest api from github api
+  * use 1.1.0 of ros_seminar
+  * do not run error on bash files
+  * fix sed to remove x.xx kB
+  * cat tork-defaults-config
+  * need to excape call colorecho
+  * add to chroot may have trouble
+  * something wrong on sed set-x?
+  * update release process using zip
+  * use catkin_make instaed, to avoid 'OSError: out of pty devices'
+  * send zipped iso https://discuss.circleci.com/t/consistently-getting-mysterious-error-error-uploading-artifacts/9849/5
+  * ls CIRCLE_ARTIFACTS
+  * echo CIRCLE_ARTIFACTS
+  * cp indigo/kinetic
+  * run make-efi-iso.sh with ROS_DISTRO
+  * builder: use ISOLINUX
+  * -hwe-16.04 is not available on indigo/trusty
+  * remove arch=.. from source.list.d/docker.list for builder/make-iso
+  * debug lb_chroot_install-packages
+  * check and clean cache
+  * 16.04 requires sysinux-utils (isohybrid)
+  * set -x
+  * set noninteractive on dpkg-reconfigure
+  * ec2: update to 16.04
+  * run make clean
+  * need to set release
+  * remove old config files
+  * add to check under builder folder
+  * rm iso before run build in vagrant
+  * pass ROS_DISTRO to vagrant
+  * build iso for both indigo/kinetic
+  * need to install sudo
+  * MAINTAINER is no longer set, find CMD ["/bin/bash"] to escape init commands
+  * add debug code for tork-docker.sh target
+  * sed ROS_DISTRO/indigo multiple times
+  * some package is not released on kinetic, [pr2_controller_manager], [libuvc_camera], [nextage_ros_bridge]
+  * use Ebs.VolumeSize = 80
+  * fix for /tmp/iso location
+  * enable to run both indigo/kinetic
+  * update circleci to run docker/kinetic
+  * add kinetic/Dockerfile
+* Contributors: Kei Okada
+
 2.3.3 (2016-12-07)
 ------------------
 * indigo/Dockerfile: add mkusb `#27 <https://github.com/tork-a/live-cd2/issues/27>`_
