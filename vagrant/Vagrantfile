@@ -26,9 +26,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       aws.availability_zone = "us-east-1b"
 
       #aws.ami               = "ami-08111162" # Amazon Linux AMI 2016.03.0 (HVM), SSD Volume Type
-      aws.ami               = "ami-fce3c696" # Ubuntu Server 14.04 LTS (HVM), SSD Volume Type
+      #aws.ami               = "ami-fce3c696" # Ubuntu Server 14.04 LTS (HVM), SSD Volume Type
+      aws.ami               = "ami-f4cc1de2" # Ubuntu Server 16.04 LTS (HVM), SSD Volume Type
       aws.block_device_mapping = [{ 'DeviceName' => '/dev/sda1',
-                                    'Ebs.VolumeSize' => 40,
+                                    'Ebs.VolumeSize' => 80,
                                     'Ebs.VolumeType' => 'gp2', # use SSD
                                     'Ebs.DeleteOnTermination' => 'true'}]
 
@@ -61,7 +62,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         echo "$(ifconfig | grep eth0 -A 1  | sed -n 's@.*inet addr:\\([0-9.]*\\)*.*@\\1@p') $(hostname)" >> /etc/hosts
         cat /etc/hosts
         apt-get update
-        apt-get install -y git build-essential fakeroot debhelper gdebi live-build
+        apt-get install -y git build-essential fakeroot debhelper gdebi live-build syslinux-utils
         apt-get install -y ubuntu-defaults-builder
         while ! docker --version ; do wget -qO- https://get.docker.com/ | sh ; done
         usermod -aG docker vagrant
@@ -70,7 +71,7 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         service docker restart
         locale-gen en_US.UTF-8
         locale-gen ja_JP.UTF-8
-        dpkg-reconfigure locales
+        dpkg-reconfigure --frontend=noninteractive locales
   EOS
 
 end

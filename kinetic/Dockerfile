@@ -1,4 +1,4 @@
-FROM osrf/ros:indigo-desktop-full
+FROM osrf/ros:kinetic-desktop-full
 MAINTAINER Kei Okada kei.okada@gmail.com
 ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update
@@ -44,7 +44,7 @@ RUN echo ";; emacs settings\n\
 (global-unset-key \"\C-o\" )\n\
 
 (setq rosdistro (getenv \"ROS_DISTRO\"))\n\
-(add-to-list 'load-path (format \"/opt/ros/%s/share/emacs/site-lisp\" (or rosdistro \"indigo\")))\n\
+(add-to-list 'load-path (format \"/opt/ros/%s/share/emacs/site-lisp\" (or rosdistro \"kinetic\")))\n\
 (require 'rosemacs)\n\
 (invoke-rosemacs)\n\
 (global-set-key \"\C-x\C-r\" ros-keymap)\n\
@@ -52,12 +52,13 @@ RUN echo ";; emacs settings\n\
 
 ## .ros.bashrc
 RUN echo "\n\
-source /opt/ros/indigo/setup.bash\n\
+source /opt/ros/kinetic/setup.bash\n\
 source \`catkin locate --shell-verbs\`\n\
 " > /etc/skel/.ros.bashrc
 
 # make home directory (user name other than ubuntu is not woking because it is hard corded /usr/share/livecd-rootfs/live-build/auto/config)
 # we should not run this on live-build
+RUN apt-get -y install sudo
 RUN getent group 999 || groupadd -g 999 tork
 #RUN useradd -p `perl -e "print(crypt('password', 'U6'));"` tork
 RUN useradd -m -u 999 -g 999 -p U6CjLveNVb5n. tork || /bin/echo -e "password\npassword\n" | sudo passwd tork
@@ -83,14 +84,14 @@ RUN apt-get -y install ros-$ROS_DISTRO-jsk-rviz-plugins
 
 # ros robot packages
 RUN apt-get -y install ros-$ROS_DISTRO-navigation-stage
-RUN apt-get -y install ros-$ROS_DISTRO-denso
-RUN apt-get -y install ros-$ROS_DISTRO-rtmros-nextage
-RUN apt-get -y install ros-$ROS_DISTRO-hakuto
-RUN apt-get -y install ros-$ROS_DISTRO-baxter-sdk ros-$ROS_DISTRO-baxter-simulator
-RUN apt-get -y install ros-$ROS_DISTRO-fetch-gazebo-demo ros-$ROS_DISTRO-fetch-teleop
-RUN apt-get -y install ros-$ROS_DISTRO-pr2-simulator ros-$ROS_DISTRO-pr2-navigation
-RUN apt-get -y install ros-$ROS_DISTRO-teleop-twist-joy ros-$ROS_DISTRO-teleop-twist-keyboard
-RUN apt-get -y install ros-$ROS_DISTRO-uvc-camera ros-$ROS_DISTRO-opencv-apps
+#RUN apt-get -y install ros-$ROS_DISTRO-denso
+#RUN apt-get -y install ros-$ROS_DISTRO-rtmros-nextage
+#RUN apt-get -y install ros-$ROS_DISTRO-hakuto
+#RUN apt-get -y install ros-$ROS_DISTRO-baxter-sdk ros-$ROS_DISTRO-baxter-simulator
+#RUN apt-get -y install ros-$ROS_DISTRO-fetch-gazebo-demo ros-$ROS_DISTRO-fetch-teleop
+#RUN apt-get -y install ros-$ROS_DISTRO-pr2-simulator ros-$ROS_DISTRO-pr2-navigation
+#RUN apt-get -y install ros-$ROS_DISTRO-teleop-twist-joy ros-$ROS_DISTRO-teleop-twist-keyboard
+#RUN apt-get -y install ros-$ROS_DISTRO-uvc-camera ros-$ROS_DISTRO-opencv-apps
 
 RUN apt-get -y install ros-$ROS_DISTRO-rosemacs
 
@@ -126,6 +127,8 @@ RUN add-apt-repository -y ppa:mkusb/ppa && apt-get update && apt-get -y install 
 
 # doocker (this create new groups, so it should be later than creating ubuntu user process)
 RUN wget -qO- https://get.docker.com/ | sh
+RUN sed -i 's@\[.*\]@@' /etc/apt/sources.list.d/docker.list # apt-get update raise erros on build/make-iso
+RUN cat /etc/apt/sources.list.d/docker.list
 RUN usermod -aG docker tork
 
 # inxi check hardware information on Linux
@@ -191,5 +194,5 @@ RUN cd ~/catkin_ws; . /opt/ros/$ROS_DISTRO/setup.sh; catkin_make
 RUN mkdir -p ~/Downloads
 RUN TAG=$(curl --retry 10 https://api.github.com/repos/tork-a/ros_seminar/releases/latest -s | jq .tag_name -r) sh -c "wget https://github.com/tork-a/ros_seminar/archive/\$TAG.tar.gz -O ~/Downloads/ros_seminar-\$TAG.tar.gz"
 RUN mkdir -p /tmp/ros_seminar && cd /tmp/ros_seminar && tar -xvzf ~/Downloads/ros_seminar-*.tar.gz --strip 1
-RUN rosdep install -y --rosdistro $ROS_DISTRO --from-paths /tmp/ros_seminar --ignore-src
+RUN rosdep install -r -y --rosdistro $ROS_DISTRO --from-paths /tmp/ros_seminar --ignore-src ## some package is not released on kinetic, [pr2_controller_manager], [libuvc_camera], [nextage_ros_bridge]
 

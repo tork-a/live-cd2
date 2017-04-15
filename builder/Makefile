@@ -45,7 +45,8 @@ iso-build-debug:
 ###
 setup-local:
 	sudo apt-get install -y git build-essential fakeroot debhelper gdebi live-build ubuntu-defaults-builder p7zip-full
-	7z x -y -o/tmp/iso ~/Downloads/ubuntu-14.04.4-desktop-amd64.iso
+	7z x -y -o/tmp/iso/indigo  ~/Downloads/ubuntu-14.04.5-desktop-amd64.iso
+	7z x -y -o/tmp/iso/kinetic ~/Downloads/ubuntu-16.04.2-desktop-amd64.iso
 	make clean
 
 build-local:
@@ -61,7 +62,15 @@ ifeq (${VM_TYPE},ec2)
 else
     VAGRANT_USERNAME=vagrant
 endif
-
+ifeq (${ROS_DISTRO},"")
+    ROS_DISTRO=indigo
+endif
+ifeq (${ROS_DISTRO},indigo)
+    RELEASE=trusty
+endif
+ifeq (${ROS_DISTRO},kinetic)
+    RELEASE=xenial
+endif
 setup-vagrant:
 	$(call colorecho, "docker info on host machine")
 	docker -H tcp://:2375 info
@@ -75,10 +84,10 @@ setup-vagrant:
 	# make lb build verbose, not to 'took more than 10 minutes since last output'
 	sshpass -p vagrant ssh -o StrictHostkeyChecking=no -p 22 ${VAGRANT_USERNAME}@${VAGRANT_HOSTNAME} bash -c "set -x; export TERM=xterm; sudo apt-get -y install live-build; sudo sed -i 's@-no-progress@@' /usr/lib/live/build/lb_binary_rootfs"
 
-build-vagrant: #depends.txt tork-indigo.sh add-apt-repository
+build-vagrant: #depends.txt tork-docker.sh add-apt-repository
 	$(call colorecho, "build iso on vagrant machine")
 	# location of builder is /opt/builder, see ../vagrant/Vagrantfile config.vm.synced_folder "../builder", "/opt/builder"
-	sshpass -p vagrant ssh -o StrictHostkeyChecking=no -p 22 ${VAGRANT_USERNAME}@${VAGRANT_HOSTNAME} bash -c "set -x; uname -a; set -x; hostname; export TERM=xterm; mkdir -p build; cd build; cat /opt/builder/make-efi-iso.sh; cp -r /opt/builder/* ./; ls -al; make ${BUILD_TARGET} VERBOSE=1;"
+	sshpass -p vagrant ssh -o StrictHostkeyChecking=no -p 22 ${VAGRANT_USERNAME}@${VAGRANT_HOSTNAME} bash -c "set -x; uname -a; set -x; hostname; export TERM=xterm; mkdir -p build; cd build; cat /opt/builder/make-efi-iso.sh; cp -r /opt/builder/* ./; ls -al; make clean ${BUILD_TARGET} VERBOSE=1 ROS_DISTRO=${ROS_DISTRO} RELEASE=${RELEASE};"
 	rsync -P --rsh="sshpass -p vagrant ssh -o StrictHostkeyChecking=no -p 22" ${VAGRANT_USERNAME}@${VAGRANT_HOSTNAME}:build/*.iso .
 
 ###
@@ -104,22 +113,24 @@ update-make-efi-iso-sh:
 depends.txt:
 	$(call colorecho, "get installed packages")
 	#docker run --rm tork/indigo bash -c 'echo "sudo apt-get update -qq; dpkg --get-selections | cut -d$$'"'"'\t'"'"' -f1 | xargs -r -n1 bash -c '"'"'apt-cache showpkg \$$0 | grep ubuntu.com > /dev/null && echo \$$0'"'"'" > gen_deps; bash ./gen_deps' | sed s/:amd64// | tee depends.txt
-	docker run --rm tork/indigo dpkg --get-selections | sed -e 's@\s*install$$@@g' | sed 's/:amd64//' | grep -v docker-engine | tee depends.txt
+	docker run --rm tork/${ROS_DISTRO} dpkg --get-selections | sed -e 's@\s*install$$@@g' | sed 's/:amd64//' | grep -v docker-engine | tee depends.txt
 
-tork-indigo.sh:
+tork-docker.sh:
 	$(call colorecho, "get command history")
+	docker history --no-trunc=true tork/${ROS_DISTRO} | tr -s " "
 	# http://stackoverflow.com/questions/19104847/how-to-generate-a-dockerfile-from-an-image
-	docker history --no-trunc=true tork/indigo | tr -s " " | sed -e 's/$$ROS_DISTRO/indigo/' | /bin/sed -e 's,#(nop) USER \[\(.*\)\],sudo -u \1 -H -i <<"EOF",' | /bin/sed -e 's,#(nop) WORKDIR \(.*\),cd \1,' | /bin/sed -e 's,#(nop) ENV \(.*\),export \1,' | /bin/sed -n -e 's,[0-9.]* [kMG]\?B *$$,,p' | sed -n -e 's,.*/bin/sh -c \(.*\),\1,p' | /bin/sed -e 's,^\(.*\)#CIRCLECI#,#CIRCLECI# \1,' | tac | sed '0,/MAINTAINER/d' | tee tork-indigo.sh
-	echo "EOF" >> tork-indigo.sh
+	docker history --no-trunc=true tork/${ROS_DISTRO} | tr -s " " | sed -e 's/$$ROS_DISTRO/${ROS_DISTRO}/g' | /bin/sed -e 's,#(nop) USER \[\(.*\)\],sudo -u \1 -H -i <<"EOF",' | /bin/sed -e 's,#(nop) WORKDIR \(.*\),cd \1,' | /bin/sed -e 's,#(nop) ENV \(.*\),export \1,' | /bin/sed -n -e 's,[0-9.*]*\s*[kMG]\?B\s*$$,,p' | sed -n -e 's,.*/bin/sh -c \(.*\),\1,p' | /bin/sed -e 's,^\(.*\)#CIRCLECI#,#CIRCLECI# \1,' | tac | sed '0,/CMD\ \[\"\/bin\/bash\"\]/d' | tee tork-docker.sh
+	echo "EOF" >> tork-docker.sh
+	cat tork-docker.sh
 
 tork-defaults:
 	$(call colorecho, "template tork-defaults files")
 	ubuntu-defaults-template tork-defaults
 
-	$(call colorecho, "add set -x to chroot")
-	echo "set -x" >> tork-defaults/hooks/chroot
-	$(call colorecho, "add set -e to chroot")
-	echo "set -e" >> tork-defaults/hooks/chroot
+	# $(call colorecho, "add set -x to chroot")
+	# echo "set -x" >> tork-defaults/hooks/chroot
+	# $(call colorecho, "add set -e to chroot")
+	# echo "set -e" >> tork-defaults/hooks/chroot
 	$(call colorecho, "setup i18n/language.txt")
 	echo "en" >> tork-defaults/i18n/language.txt
 	echo "ja" >> tork-defaults/i18n/language.txt
@@ -171,22 +182,26 @@ archives/tork-defaults.list:
 	$(call colorecho, "get sources.list.d/*.list")
 	## get from docker
 	mkdir -p archives/
-	docker run --rm tork/indigo sh -c 'cat /etc/apt/sources.list.d/*.list' > archives/tork-defaults.list;
+	docker run --rm tork/${ROS_DISTRO} sh -c 'cat /etc/apt/sources.list.d/*.list' > archives/tork-defaults.list;
 	sed -i 's@https://@http://@' archives/tork-defaults.list
 
 archives/tork-defaults.key:
 	$(call colorecho, "get apt-keys")
 	mkdir -p archives/
-	docker run --rm tork/indigo apt-key exportall | gpg --dearmor > archives/tork-defaults.key
+	docker run --rm tork/${ROS_DISTRO} apt-key exportall | gpg --dearmor > archives/tork-defaults.key
 
 
 iso-build:
+	# check
+	ls -al
+	sudo rm -fr cache
+
 	# install
 	$(call colorecho, "install ubuntu-defaults-builder build-essential")
 	sudo apt-get install -y ubuntu-defaults-builder build-essential xorriso
 
-	$(call colorecho, "make tork-indigo.sh")
-	make tork-indigo.sh
+	$(call colorecho, "make tork-docker.sh")
+	make tork-docker.sh
 
 	$(call colorecho, "make depends.txt")
 	make depends.txt
@@ -200,8 +215,8 @@ iso-build:
 	make tork-defaults/debian/tork-defaults.install
 
 	# custom from Dockerfile
-	$(call colorecho, "cat tork-indigo.sh >> tork-defaults/hooks/chroot")
-	cat tork-indigo.sh >> tork-defaults/hooks/chroot
+	$(call colorecho, "cat tork-docker.sh >> tork-defaults/hooks/chroot")
+	cat tork-docker.sh >> tork-defaults/hooks/chroot
 
 	$(call colorecho, "use casper for vivid")
 	## work around for casper-rw partition http://askubuntu.com/a/725709/469233
@@ -217,11 +232,18 @@ iso-build:
 	cd tork-defaults; dpkg-buildpackage -us -uc
 
 	## ubuntu-defaults-image
-	$(call colorecho, "run ubuntu-defaults-image (config part)")
+	$(call colorecho, "run ubuntu-defaults-image \(config part\)")
 	#cat `which ubuntu-defaults-image` | sed 's@lb config@lb config username=username hostname=ros-indigo@' | sed 's@^\(.*lb build.*\)$$@echo \1 > tork-defaults-build@'> tork-defaults-config
 	cat `which ubuntu-defaults-image` | sed 's@^\(.*lb build.*\)$$@echo \1 > tork-defaults-build@'> tork-defaults-config
-	chmod u+x ./tork-defaults-config
-	./tork-defaults-config --package tork-defaults_0.1_all.deb --components main,restricted,universe,multiverse # --ppa xorg-edgers/ppa
+	# chmod u+x ./tork-defaults-config
+	sudo sed -i '0,/set -e/s//#set -e\nset -x/' tork-defaults-config
+	cat tork-defaults-config
+	sudo sed -i '0,/set -e/s//#set -e\nset -x/' /usr/lib/live/build/lb_chroot_archives
+	cat /usr/lib/live/build/lb_chroot_archives
+	sudo sed -i '0,/set -e/s//#set -e\nset -x/' /usr/lib/live/build/lb_chroot_install-packages
+	cat /usr/lib/live/build/lb_chroot_install-packages
+	sh -x ./tork-defaults-config --release ${RELEASE} --package tork-defaults_0.1_all.deb --components main,restricted,universe,multiverse # --ppa xorg-edgers/ppa
+	test "${RELEASE}" = "trusty" && sed -i 's@-hwe-16.04@@' config/chroot config/package-lists/* || echo "OK" # -hwe-16.04 is not available on indigo/trusty
 
 	# add-apt-repository generate fiels in archvies, since lb config cleans config/archives
 	$(call colorecho, "make add-apt-repository")
@@ -258,17 +280,17 @@ iso-build:
 
 	# https://lists.ubuntu.com/archives/ubuntu-devel/2014-November/038540.html
 	$(call colorecho, "EFI hack")
-	./make-efi-iso.sh
+	./make-efi-iso.sh ${ROS_DISTRO}
 
 iso-run:
-	$(call colorecho, "run indigo.tork.iso with kvm")
-	kvm --cdrom indigo.tork.iso -m 1G
+	$(call colorecho, "run ${ROS_DISTRO}.tork.iso with kvm")
+	kvm --cdrom ${ROS_DISTRO}.tork.iso -m 1G
 
 
 ### test iso with packer
 packer.json: packer.json.in
 	# add iso filename and md5sum
-	cat packer.json.in | sed 's#@ISO_MD5SUM@#$(shell md5sum indigo-tork-*.iso | cut -f1 -d\ )#' | sed 's#@ISO_URL@#file://$(CURDIR)/$(shell ls indigo-tork-*.iso)#' | tee packer.json;
+	cat packer.json.in | sed 's#@ISO_MD5SUM@#$(shell md5sum ${ROS_DISTRO}-tork-*.iso | cut -f1 -d\ )#' | sed 's#@ISO_URL@#file://$(CURDIR)/$(shell ls ${ROS_DISTRO}-tork-*.iso)#' | tee packer.json;
 
 packer:
 	# download packer
@@ -306,7 +328,7 @@ clean:
 
 	# rm ubuntu-defaults-image files
 	$(call colorecho, "reomve build files")
-	sudo rm -fr .build auto archives binary* chroot* config livecd.* local tork-indigo.sh depends.txt docker-build
+	sudo rm -fr .build auto archives binary* chroot* config livecd.* local tork-docker.sh depends.txt docker-build
 
 	$(call colorecho, "reomve cache")
 	sudo rm -fr cache
@@ -316,6 +338,7 @@ clean:
 	sudo rm -fr tork-defaults*
 
 help:
+	@echo "iso builder for ${ROS_DISTRO}/${RELEASE}"
 	@echo "docker-build: build docker image"
 	@echo "docker-run:   run docker image"
 	@echo "iso-build:    build iso image"

@@ -1,13 +1,14 @@
 #!/bin/bash
 
 #https://lists.ubuntu.com/archives/ubuntu-devel/2014-November/038540.html
+ROS_DISTRO=${1:-indigo}
 
 set -x
 set -e
 
-sudo cp -ar /tmp/iso/EFI/ /tmp/iso/README.diskdefines /tmp/iso/boot/ /tmp/iso/dists/ /tmp/iso/pool/ /tmp/iso/preseed/ ./binary
+sudo cp -ar /tmp/iso/${ROS_DISTRO}/EFI/ /tmp/iso/${ROS_DISTRO}/README.diskdefines /tmp/iso/${ROS_DISTRO}/boot/ /tmp/iso/${ROS_DISTRO}/dists/ /tmp/iso/${ROS_DISTRO}/pool/ /tmp/iso/${ROS_DISTRO}/preseed/ ./binary
 sudo ls -al binary/
-sudo cp -a /tmp/iso/.disk/base_installable /tmp/iso/.disk/cd_type ./binary/.disk/
+sudo cp -a /tmp/iso/${ROS_DISTRO}/.disk/base_installable /tmp/iso/${ROS_DISTRO}/.disk/cd_type ./binary/.disk/
 echo 'https://wiki.ubuntu.com/TrustyTahr/ReleaseNotes' | sudo tee ./binary/.disk/release_notes_url
 
 echo "Ubuntu 14.04 \"Trusty Tahr\" - Release amd64(`date '+%Y%m%d.1'`)" | sudo tee ./binary/.disk/info
@@ -40,4 +41,4 @@ cat <<EOF | sudo tee sort.txt
 70 preseed/
 EOF
 
-sudo xorriso -as mkisofs -volid "Ubuntu 14.04 ja amd64" -o indigo-tork-`date +%Y%m%d_%H%M%S`.iso -rock -omit-version-number -disable-deep-relocation -joliet -isohybrid-mbr /usr/lib/syslinux/isohdpfx.bin -c isolinux/boot.cat -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat -isohybrid-apm-hfsplus --sort-weight-patterns sort.txt binary/
+sudo xorriso -as mkisofs -volid "Ubuntu/ROS ja amd64" -o $ROS_DISTRO-tork-`date +%Y%m%d_%H%M%S`.iso -rock -omit-version-number -disable-deep-relocation -joliet -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin -c isolinux/boot.cat -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat -isohybrid-apm-hfsplus --sort-weight-patterns sort.txt binary/
