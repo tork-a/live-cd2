@@ -2,8 +2,8 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.0 (2017-04-15)
+------------------
 * Add kinetic(`#30 <https://github.com/tork-a/live-cd2/issues/30>`_)
   * copy url to s3.txt
   * enable hakuto and send to s3 when suceeded
