@@ -94,6 +94,8 @@ RUN apt-get -y install ros-$ROS_DISTRO-uvc-camera ros-$ROS_DISTRO-opencv-apps
 
 RUN apt-get -y install ros-$ROS_DISTRO-rosemacs
 
+RUN apt-get -y install ros-$ROS_DISTRO-pocketsphinx gstreamer0.10-gconf
+
 ## useful tools
 
 # install chromium
