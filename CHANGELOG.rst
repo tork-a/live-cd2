@@ -2,8 +2,8 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.1 (2017-08-02)
+------------------
 * update to run `rosdep update` for important key changes https://discourse.ros.org/t/proposed-rename-of-rosdep-keys-pocketsphinx-and-xdot/1959/2
 
 3.0.0 (2017-04-15)
