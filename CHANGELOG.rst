@@ -2,6 +2,10 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* update to run `rosdep update` for important key changes https://discourse.ros.org/t/proposed-rename-of-rosdep-keys-pocketsphinx-and-xdot/1959/2
+
 3.0.0 (2017-04-15)
 ------------------
 * Add kinetic(`#30 <https://github.com/tork-a/live-cd2/issues/30>`_)
