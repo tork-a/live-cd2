@@ -72,6 +72,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
         locale-gen en_US.UTF-8
         locale-gen ja_JP.UTF-8
         dpkg-reconfigure --frontend=noninteractive locales
+        # use gnomon
+        apt-get install -y nodejs-legacy npm
+        npm install -g gnomon
   EOS
 
 end

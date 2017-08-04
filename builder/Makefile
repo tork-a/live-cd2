@@ -1,6 +1,7 @@
 ##
 ## assuming we already have vagrant running docker
 ##
+SHELL=bash
 
 ifneq ("$(wildcard ../color.mk)","") # http://stackoverflow.com/questions/5553352/how-do-i-check-if-file-exists-in-makefile
 include ../color.mk
@@ -303,11 +304,11 @@ packer:
 
 packer_virtualbox-iso_virtualbox.box: packer.json packer-postinstall.sh
 	# build box
-	./packer build --force -only=virtualbox-iso packer.json
+	./packer build --force -only=virtualbox-iso packer.json | gnomon -r 180000; exit "$${PIPESTATUS[0]}"
 
 packer_qemu_virtualbox.box: packer.json packer-postinstall.sh
 	# build box
-	./packer build --force -only=qemu packer.json
+	./packer build --force -only=qemu packer.json | gnomon -r 180000; exit "$${PIPESTATUS[0]}"
 
 iso-test: packer packer.json packer_qemu_virtualbox.box
 	#vagrant box remove -f iso || echo "ok"
