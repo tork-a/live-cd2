@@ -310,7 +310,10 @@ packer_qemu_virtualbox.box: packer.json packer-postinstall.sh
 	# build box
 	./packer build --force -only=qemu packer.json | gnomon -r 180000; exit "$${PIPESTATUS[0]}"
 
-iso-test: packer packer.json packer_qemu_virtualbox.box
+pre-iso-test:
+	test -e packer.json && rm packer.json || echo "packer.json is not exists"
+
+iso-test: pre-iso-test packer packer.json packer_qemu_virtualbox.box
 	#vagrant box remove -f iso || echo "ok"
 	#vagrant destroy -f default || ecoh "ok"
 	#rm -f Vagrantfile
