@@ -26,7 +26,7 @@
       "ssh_username": "tork",
       "ssh_password": "password",
       "ssh_port": 22,
-      "ssh_wait_timeout": "1000s",
+      "ssh_wait_timeout": "1500s",
       "shutdown_command": "echo 'shutdown -P now' > shutdown.sh; sudo -S sh 'shutdown.sh'"
     }
   ]
