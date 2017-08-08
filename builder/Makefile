@@ -295,9 +295,9 @@ packer.json: packer.json.in
 
 packer:
 	# download packer
-	wget https://releases.hashicorp.com/packer/0.10.0/packer_0.10.0_linux_amd64.zip
+	wget https://releases.hashicorp.com/packer/1.0.3/packer_1.0.3_linux_amd64.zip
 	dpkg-query -W -f='$${Status} $${Version}\n' unzip || sudo apt-get -y install unzip
-	unzip packer_0.10.0_linux_amd64.zip
+	unzip packer_1.0.3_linux_amd64.zip
 	dpkg-query -W -f='$${Status} $${Version}\n' qemu-system-x86 || sudo apt-get -y install qemu-system-x86
 	vagrant plugin list | grep qemu || vagrant plugin install qemu
 
