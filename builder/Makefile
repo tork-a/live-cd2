@@ -120,7 +120,7 @@ tork-docker.sh:
 	$(call colorecho, "get command history")
 	docker history --no-trunc=true tork/${ROS_DISTRO} | tr -s " "
 	# http://stackoverflow.com/questions/19104847/how-to-generate-a-dockerfile-from-an-image
-	docker history --no-trunc=true tork/${ROS_DISTRO} | tr -s " " | sed -e 's/$$ROS_DISTRO/${ROS_DISTRO}/g' | /bin/sed -e 's,#(nop) USER \[\(.*\)\],sudo -u \1 -H -i <<"EOF",' | /bin/sed -e 's,#(nop) WORKDIR \(.*\),cd \1,' | /bin/sed -e 's,#(nop) ENV \(.*\),export \1,' | /bin/sed -n -e 's,[0-9.*]*\s*[kMG]\?B\s*$$,,p' | sed -n -e 's,.*/bin/sh -c \(.*\),\1,p' | /bin/sed -e 's,^\(.*\)#CIRCLECI#,#CIRCLECI# \1,' | tac | sed '0,/CMD\ \[\"\/bin\/bash\"\]/d' | tee tork-docker.sh
+	docker history --no-trunc=true tork/${ROS_DISTRO} | tr -s " " | sed -e 's/$$ROS_DISTRO/${ROS_DISTRO}/g' | /bin/sed -e 's,#(nop) USER \[\(.*\)\],sudo -u \1 -H -i <<"EOF",' | /bin/sed -e 's,#(nop) WORKDIR \(.*\),set -x; cd \1,' | /bin/sed -e 's,#(nop) ENV \(.*\),export \1,' | /bin/sed -n -e 's,[0-9.*]*\s*[kMG]\?B\s*$$,,p' | sed -n -e 's,.*/bin/sh -c \(.*\),\1,p' | /bin/sed -e 's,^\(.*\)#CIRCLECI#,#CIRCLECI# \1,' | tac | sed '0,/CMD\ \[\"\/bin\/bash\"\]/d' | tee tork-docker.sh
 	echo "EOF" >> tork-docker.sh
 	cat tork-docker.sh
 
@@ -217,7 +217,9 @@ iso-build:
 
 	# custom from Dockerfile
 	$(call colorecho, "cat tork-docker.sh >> tork-defaults/hooks/chroot")
+	echo -e "\n## BEGIN tork-docker.sh\n" >> tork-defaults/hooks/chroot
 	cat tork-docker.sh >> tork-defaults/hooks/chroot
+	echo -e "\n## END tork-docker.sh\n" >> tork-defaults/hooks/chroot
 
 ifeq (${RELEASE},trusty)
 	$(call colorecho, "use casper for vivid")
@@ -226,8 +228,11 @@ ifeq (${RELEASE},trusty)
 	echo "sudo dpkg -x /tmp/casper_1.360_amd64.deb /tmp/casper-src" >> tork-defaults/hooks/chroot
 	echo "sudo cp /tmp/casper-src/usr/share/initramfs-tools/scripts/casper /usr/share/initramfs-tools/scripts/casper" >> tork-defaults/hooks/chroot
 endif
+	cat -n tork-defaults/hooks/chroot
+
 	$(call colorecho, "cat depends.txt >> tork-defaults/depends.txt")
 	cat depends.txt >> tork-defaults/depends.txt
+	cat -n tork-defaults/depends.txt
 
 	# build
 	$(call colorecho, "build tork-defaults package")
