@@ -124,7 +124,7 @@ tork-docker.sh:
 	echo "EOF" >> tork-docker.sh
 	# workaround for https://github.com/ros-infrastructure/catkin_pkg/pull/190
 	sed -i 's@apt-get clean@apt-get clean; sed -i "s/< 100:/< 1000:/" /usr/lib/python2.7/dist-packages/catkin_pkg/packages.py; cat /usr/lib/python2.7/dist-packages/catkin_pkg/packages.py@' tork-docker.sh
-	cat tork-docker.sh
+	cat -n tork-docker.sh
 
 tork-defaults:
 	$(call colorecho, "template tork-defaults files")
