@@ -187,7 +187,6 @@ archives/tork-defaults.list:
 	mkdir -p archives/
 	docker run --rm tork/${ROS_DISTRO} sh -c 'cat /etc/apt/sources.list.d/*.list' > archives/tork-defaults.list;
 	docker run --rm tork/${ROS_DISTRO} sh -c 'cat /etc/apt/sources.list | grep docker.com' >> archives/tork-defaults.list;
-	sed -i 's@https://@http://@' archives/tork-defaults.list
 	cat -n archives/tork-defaults.list
 
 archives/tork-defaults.key:
@@ -249,10 +248,14 @@ endif
 	# chmod u+x ./tork-defaults-config
 	# sudo sed -i '0,/set -e/s//#set -e\nset -x/' tork-defaults-config
 	# cat tork-defaults-config
-	sudo sed -i '0,/set -e/s//#set -e\nset -x/' /usr/lib/live/build/lb_chroot_archives
+	# sudo sed -i '0,/set -e/s//#set -e\nset -x/' /usr/lib/live/build/lb_chroot_archives
 	# cat /usr/lib/live/build/lb_chroot_archives
 	# sudo sed -i '0,/set -e/s//#set -e\nset -x/' /usr/lib/live/build/lb_chroot_install-packages
 	# cat /usr/lib/live/build/lb_chroot_install-packages
+	##
+	$(call colorecho, "FORCE CHANGE enable to use https")
+	sudo sed -i '0,/Set_defaults/s//Set_defaults\nset -x\nchroot chroot apt-get install -y --force-yes apt-transport-https/' /usr/lib/live/build/lb_chroot_archives
+	##
 	sh -x ./tork-defaults-config --release ${RELEASE} --package tork-defaults_0.1_all.deb --components main,restricted,universe,multiverse # --ppa xorg-edgers/ppa
 	test "${RELEASE}" = "trusty" && sed -i 's@-hwe-16.04@@' config/chroot config/package-lists/* || echo "OK" # -hwe-16.04 is not available on indigo/trusty
 
