@@ -306,6 +306,9 @@ packer.json: packer.json.in
 	# add iso filename and md5sum
 	cat packer.json.in | sed 's#@ISO_MD5SUM@#$(shell md5sum ${ROS_DISTRO}-tork-*.iso | cut -f1 -d\ )#' | sed 's#@ISO_URL@#file://$(CURDIR)/$(shell ls ${ROS_DISTRO}-tork-*.iso)#' | tee packer.json;
 
+packer-postinstall.sh: packer-postinstall.sh.in
+	cat packer-postinstall.sh.in | sed 's#@ROS_DISTRO@#${ROS_DISTRO}#' | tee packer-postinstall.sh
+
 packer:
 	# download packer
 	wget https://releases.hashicorp.com/packer/1.0.3/packer_1.0.3_linux_amd64.zip
@@ -324,9 +327,10 @@ packer_qemu_virtualbox.box: packer.json packer-postinstall.sh
 	PACKER_LOG=1 ./packer build --force -only=qemu packer.json
 
 pre-iso-test:
-	test -e packer.json && rm packer.json || echo "packer.json is not exists"
+	test -e packer.json && rm packer.json || echo "packer.json is not exist"
+	test -e packer-postinstall.sh && rm packer-postinstall.sh || echo "packer-postinstall.sh is not exist"
 
-iso-test: pre-iso-test packer packer.json packer_qemu_virtualbox.box
+iso-test: pre-iso-test packer packer.json packer-postinstall.sh packer_qemu_virtualbox.box
 	#vagrant box remove -f iso || echo "ok"
 	#vagrant destroy -f default || ecoh "ok"
 	#rm -f Vagrantfile
