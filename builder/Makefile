@@ -1,6 +1,7 @@
 ##
 ## assuming we already have vagrant running docker
 ##
+SHELL=bash
 
 ifneq ("$(wildcard ../color.mk)","") # http://stackoverflow.com/questions/5553352/how-do-i-check-if-file-exists-in-makefile
 include ../color.mk
@@ -119,18 +120,20 @@ tork-docker.sh:
 	$(call colorecho, "get command history")
 	docker history --no-trunc=true tork/${ROS_DISTRO} | tr -s " "
 	# http://stackoverflow.com/questions/19104847/how-to-generate-a-dockerfile-from-an-image
-	docker history --no-trunc=true tork/${ROS_DISTRO} | tr -s " " | sed -e 's/$$ROS_DISTRO/${ROS_DISTRO}/g' | /bin/sed -e 's,#(nop) USER \[\(.*\)\],sudo -u \1 -H -i <<"EOF",' | /bin/sed -e 's,#(nop) WORKDIR \(.*\),cd \1,' | /bin/sed -e 's,#(nop) ENV \(.*\),export \1,' | /bin/sed -n -e 's,[0-9.*]*\s*[kMG]\?B\s*$$,,p' | sed -n -e 's,.*/bin/sh -c \(.*\),\1,p' | /bin/sed -e 's,^\(.*\)#CIRCLECI#,#CIRCLECI# \1,' | tac | sed '0,/CMD\ \[\"\/bin\/bash\"\]/d' | tee tork-docker.sh
+	docker history --no-trunc=true tork/${ROS_DISTRO} | tr -s " " | sed -e 's/$$ROS_DISTRO/${ROS_DISTRO}/g' | /bin/sed -e 's,#(nop) USER \[\(.*\)\],sudo -u \1 -H -i <<"EOF",' | /bin/sed -e 's,#(nop) WORKDIR \(.*\),set -x; cd \1,' | /bin/sed -e 's,#(nop) ENV \(.*\),export \1,' | /bin/sed -n -e 's,[0-9.*]*\s*[kMG]\?B\s*$$,,p' | sed -n -e 's,.*/bin/sh -c \(.*\),\1,p' | /bin/sed -e 's,^\(.*\)#CIRCLECI#,#CIRCLECI# \1,' | tac | sed '0,/CMD\ \[\"\/bin\/bash\"\]/d' | tee tork-docker.sh
 	echo "EOF" >> tork-docker.sh
-	cat tork-docker.sh
+	# workaround for https://github.com/ros-infrastructure/catkin_pkg/pull/190
+	sed -i 's@apt-get clean@apt-get clean; sed -i "s/< 100:/< 1000:/" /usr/lib/python2.7/dist-packages/catkin_pkg/packages.py; cat /usr/lib/python2.7/dist-packages/catkin_pkg/packages.py@' tork-docker.sh
+	cat -n tork-docker.sh
 
 tork-defaults:
 	$(call colorecho, "template tork-defaults files")
 	ubuntu-defaults-template tork-defaults
 
-	# $(call colorecho, "add set -x to chroot")
-	# echo "set -x" >> tork-defaults/hooks/chroot
-	# $(call colorecho, "add set -e to chroot")
-	# echo "set -e" >> tork-defaults/hooks/chroot
+	$(call colorecho, "add set -x to chroot")
+	echo "set -x" >> tork-defaults/hooks/chroot
+	$(call colorecho, "add set -e to chroot")
+	echo "set -e" >> tork-defaults/hooks/chroot
 	$(call colorecho, "setup i18n/language.txt")
 	echo "en" >> tork-defaults/i18n/language.txt
 	echo "ja" >> tork-defaults/i18n/language.txt
@@ -183,7 +186,8 @@ archives/tork-defaults.list:
 	## get from docker
 	mkdir -p archives/
 	docker run --rm tork/${ROS_DISTRO} sh -c 'cat /etc/apt/sources.list.d/*.list' > archives/tork-defaults.list;
-	sed -i 's@https://@http://@' archives/tork-defaults.list
+	docker run --rm tork/${ROS_DISTRO} sh -c 'cat /etc/apt/sources.list | grep docker.com' >> archives/tork-defaults.list;
+	cat -n archives/tork-defaults.list
 
 archives/tork-defaults.key:
 	$(call colorecho, "get apt-keys")
@@ -216,16 +220,22 @@ iso-build:
 
 	# custom from Dockerfile
 	$(call colorecho, "cat tork-docker.sh >> tork-defaults/hooks/chroot")
+	echo -e "\n## BEGIN tork-docker.sh\n" >> tork-defaults/hooks/chroot
 	cat tork-docker.sh >> tork-defaults/hooks/chroot
+	echo -e "\n## END tork-docker.sh\n" >> tork-defaults/hooks/chroot
 
+ifeq (${RELEASE},trusty)
 	$(call colorecho, "use casper for vivid")
 	## work around for casper-rw partition http://askubuntu.com/a/725709/469233
 	echo "wget http://archive.ubuntu.com/ubuntu/pool/main/c/casper/casper_1.360_amd64.deb -O /tmp/casper_1.360_amd64.deb" >> tork-defaults/hooks/chroot
 	echo "sudo dpkg -x /tmp/casper_1.360_amd64.deb /tmp/casper-src" >> tork-defaults/hooks/chroot
 	echo "sudo cp /tmp/casper-src/usr/share/initramfs-tools/scripts/casper /usr/share/initramfs-tools/scripts/casper" >> tork-defaults/hooks/chroot
+endif
+	cat -n tork-defaults/hooks/chroot
 
 	$(call colorecho, "cat depends.txt >> tork-defaults/depends.txt")
 	cat depends.txt >> tork-defaults/depends.txt
+	cat -n tork-defaults/depends.txt
 
 	# build
 	$(call colorecho, "build tork-defaults package")
@@ -236,12 +246,16 @@ iso-build:
 	#cat `which ubuntu-defaults-image` | sed 's@lb config@lb config username=username hostname=ros-indigo@' | sed 's@^\(.*lb build.*\)$$@echo \1 > tork-defaults-build@'> tork-defaults-config
 	cat `which ubuntu-defaults-image` | sed 's@^\(.*lb build.*\)$$@echo \1 > tork-defaults-build@'> tork-defaults-config
 	# chmod u+x ./tork-defaults-config
-	sudo sed -i '0,/set -e/s//#set -e\nset -x/' tork-defaults-config
-	cat tork-defaults-config
-	sudo sed -i '0,/set -e/s//#set -e\nset -x/' /usr/lib/live/build/lb_chroot_archives
-	cat /usr/lib/live/build/lb_chroot_archives
-	sudo sed -i '0,/set -e/s//#set -e\nset -x/' /usr/lib/live/build/lb_chroot_install-packages
-	cat /usr/lib/live/build/lb_chroot_install-packages
+	# sudo sed -i '0,/set -e/s//#set -e\nset -x/' tork-defaults-config
+	# cat tork-defaults-config
+	# sudo sed -i '0,/set -e/s//#set -e\nset -x/' /usr/lib/live/build/lb_chroot_archives
+	# cat /usr/lib/live/build/lb_chroot_archives
+	# sudo sed -i '0,/set -e/s//#set -e\nset -x/' /usr/lib/live/build/lb_chroot_install-packages
+	# cat /usr/lib/live/build/lb_chroot_install-packages
+	##
+	$(call colorecho, "FORCE CHANGE enable to use https")
+	sudo sed -i '0,/Set_defaults/s//Set_defaults\nset -x\nchroot chroot apt-get install -y --force-yes apt-transport-https/' /usr/lib/live/build/lb_chroot_archives
+	##
 	sh -x ./tork-defaults-config --release ${RELEASE} --package tork-defaults_0.1_all.deb --components main,restricted,universe,multiverse # --ppa xorg-edgers/ppa
 	test "${RELEASE}" = "trusty" && sed -i 's@-hwe-16.04@@' config/chroot config/package-lists/* || echo "OK" # -hwe-16.04 is not available on indigo/trusty
 
@@ -292,24 +306,31 @@ packer.json: packer.json.in
 	# add iso filename and md5sum
 	cat packer.json.in | sed 's#@ISO_MD5SUM@#$(shell md5sum ${ROS_DISTRO}-tork-*.iso | cut -f1 -d\ )#' | sed 's#@ISO_URL@#file://$(CURDIR)/$(shell ls ${ROS_DISTRO}-tork-*.iso)#' | tee packer.json;
 
+packer-postinstall.sh: packer-postinstall.sh.in
+	cat packer-postinstall.sh.in | sed 's#@ROS_DISTRO@#${ROS_DISTRO}#' | tee packer-postinstall.sh
+
 packer:
 	# download packer
-	wget https://releases.hashicorp.com/packer/0.10.0/packer_0.10.0_linux_amd64.zip
+	wget https://releases.hashicorp.com/packer/1.0.3/packer_1.0.3_linux_amd64.zip
 	dpkg-query -W -f='$${Status} $${Version}\n' unzip || sudo apt-get -y install unzip
-	unzip packer_0.10.0_linux_amd64.zip
+	unzip packer_1.0.3_linux_amd64.zip
 	dpkg-query -W -f='$${Status} $${Version}\n' qemu-system-x86 || sudo apt-get -y install qemu-system-x86
 	vagrant plugin list | grep qemu || vagrant plugin install qemu
 
 
 packer_virtualbox-iso_virtualbox.box: packer.json packer-postinstall.sh
 	# build box
-	./packer build --force -only=virtualbox-iso packer.json
+	PACKER_LOG=1 ./packer build --force -only=virtualbox-iso packer.json
 
 packer_qemu_virtualbox.box: packer.json packer-postinstall.sh
 	# build box
-	./packer build --force -only=qemu packer.json
+	PACKER_LOG=1 ./packer build --force -only=qemu packer.json
 
-iso-test: packer packer.json packer_qemu_virtualbox.box
+pre-iso-test:
+	test -e packer.json && rm packer.json || echo "packer.json is not exist"
+	test -e packer-postinstall.sh && rm packer-postinstall.sh || echo "packer-postinstall.sh is not exist"
+
+iso-test: pre-iso-test packer packer.json packer-postinstall.sh packer_qemu_virtualbox.box
 	#vagrant box remove -f iso || echo "ok"
 	#vagrant destroy -f default || ecoh "ok"
 	#rm -f Vagrantfile

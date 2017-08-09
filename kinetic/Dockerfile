@@ -127,8 +127,6 @@ RUN add-apt-repository -y ppa:mkusb/ppa && apt-get update && apt-get -y install 
 
 # doocker (this create new groups, so it should be later than creating ubuntu user process)
 RUN wget -qO- https://get.docker.com/ | sh
-RUN sed -i 's@\[.*\]@@' /etc/apt/sources.list.d/docker.list # apt-get update raise erros on build/make-iso
-RUN cat /etc/apt/sources.list.d/docker.list
 RUN usermod -aG docker tork
 
 # inxi check hardware information on Linux
