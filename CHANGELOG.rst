@@ -2,6 +2,28 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix to work on kinetic/indigo (`#33 <https://github.com/tork-a/live-cd2/issues/33>`_ )
+  * generate packer-postinsatll.sh
+  * install apt-transport-https in chroot to support https in  /etc/apt/sources.list
+  * use PACKER_LOG=1 instead of gnomon
+  * remove [arch=amd64] from sources.list
+  * add set -x in /usr/lib/live/build/lb_chroot_archives for debug
+  * cat -n tork-docker.sh
+  * export docker.com deb url to archives/tork-defaults.list
+  * work around for https://github.com/ros-infrastructure/catkin_pkg/pull/190
+  * use set -x for tork user commands
+  * use vivid casper only required for trusty
+  * revert https://github.com/tork-a/live-cd2/commit/9baedcdb515f1e2555ee75b6e3049de42ed4aacc
+  * builder/Makefile use packer 1.0.3
+  * build/packer.json.in: increase ssh_wait_timeout to 1500s
+  * rm packer.json before run iso-test
+  * build/packer.json.in: run packaer with gnomon, to avoid silent
+  * kinetic/Docker: as of 2017.08.03 https://get.docker.com/ installes docker repository to sources.list, not sources.list.d/docker
+
+* Contributors: Kei Okada
+
 3.0.1 (2017-08-02)
 ------------------
 * update to run `rosdep update` for important key changes https://discourse.ros.org/t/proposed-rename-of-rosdep-keys-pocketsphinx-and-xdot/1959/2
