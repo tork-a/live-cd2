@@ -2,8 +2,8 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.2 (2017-08-09)
+------------------
 * Fix to work on kinetic/indigo (`#33 <https://github.com/tork-a/live-cd2/issues/33>`_ )
   * generate packer-postinsatll.sh
   * install apt-transport-https in chroot to support https in  /etc/apt/sources.list
