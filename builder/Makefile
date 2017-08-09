@@ -314,11 +314,11 @@ packer:
 
 packer_virtualbox-iso_virtualbox.box: packer.json packer-postinstall.sh
 	# build box
-	./packer build --force -only=virtualbox-iso packer.json | gnomon -r 180000; exit "$${PIPESTATUS[0]}"
+	PACKER_LOG=1 ./packer build --force -only=virtualbox-iso packer.json
 
 packer_qemu_virtualbox.box: packer.json packer-postinstall.sh
 	# build box
-	./packer build --force -only=qemu packer.json | gnomon -r 180000; exit "$${PIPESTATUS[0]}"
+	PACKER_LOG=1 ./packer build --force -only=qemu packer.json
 
 pre-iso-test:
 	test -e packer.json && rm packer.json || echo "packer.json is not exists"
