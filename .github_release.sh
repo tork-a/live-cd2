@@ -11,6 +11,8 @@ echo "- user: k-okada" >> ~/.config/hub
 echo "  oauth_token: $GITHUB_ACCESS_TOKEN" >> ~/.config/hub
 
 set -x
+git checkout -b $CIRCLE_TAG
+git branch
 csplit CHANGELOG.rst '/^------------/' '{*}'
 for iso in release/*.iso ; do
     filename=`basename $iso .iso`-${CIRCLE_TAG//./_}.iso
