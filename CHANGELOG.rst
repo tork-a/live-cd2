@@ -2,8 +2,8 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.3 (2017-08-11)
+------------------
 * fix circleci error 08.10 (`#36 <https://github.com/tork-a/live-cd2/issues/36>`_)
   * create hub before release
   * some packages is not released on kinetic yet 2017.08.10
