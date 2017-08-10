@@ -2,6 +2,14 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* fix circleci error 08.10 (`#36 <https://github.com/tork-a/live-cd2/issues/36>`_)
+  * create hub before release
+  * some packages is not released on kinetic yet 2017.08.10
+
+* Contributors: Kei Okada
+
 3.0.2 (2017-08-09)
 ------------------
 * Fix to work on kinetic/indigo (`#33 <https://github.com/tork-a/live-cd2/issues/33>`_ )
