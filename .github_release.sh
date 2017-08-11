@@ -13,10 +13,12 @@ echo "  oauth_token: $GITHUB_ACCESS_TOKEN" >> ~/.config/hub
 
 set -x
 csplit CHANGELOG.rst '/^------------/' '{*}'
+aws_files=""
 for iso in release/*.iso ; do
     filename=`basename $iso .iso`-${CIRCLE_TAG//./_}.iso
+    aws_files="$aws_files"$'\n'"[Custom LIVE-CD $filename](https://s3-ap-northeast-1.amazonaws.com/live-cd2/$filename)"$'\n'
     aws s3 cp $iso s3://live-cd2/$filename  --acl public-read
-    hub release; sleep 10
-    hub release create -p -m "$CIRCLE_TAG"$'\n'"[Custom LIVE-CD $filename](https://s3-ap-northeast-1.amazonaws.com/live-cd2/$filename)"$'\n\n'"`sed '$d' xx01`"$'\n\n'"Released on `date '+%Y/%m/%d %H:%M:%S'`" $CIRCLE_TAG
 done
+hub release; sleep 10
+hub release create -p -m "$CIRCLE_TAG"$'\n\n'"$aws_files"$'\n\n'"`sed '$d' xx01`"$'\n\n'"Released on `date '+%Y/%m/%d %H:%M:%S'`" $CIRCLE_TAG
 
