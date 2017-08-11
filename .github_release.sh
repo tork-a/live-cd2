@@ -2,8 +2,9 @@
 
 set -e
 
-git clone -b v2.2.2 https://github.com/github/hub.git;
-(cd hub; ./script/build; sudo cp hub /usr/local/bin/)
+# install latest hub 2017.08.04
+git clone -b v2.3.0-pre10 https://github.com/github/hub.git
+(cd hub; ./script/build; sudo cp bin/hub /usr/local/bin/)
 
 mkdir -p ~/.config/
 echo "github.com:" > ~/.config/hub
