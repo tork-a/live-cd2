@@ -186,7 +186,7 @@ archives/tork-defaults.list:
 	## get from docker
 	mkdir -p archives/
 	docker run --rm tork/${ROS_DISTRO} sh -c 'cat /etc/apt/sources.list.d/*.list' > archives/tork-defaults.list;
-	docker run --rm tork/${ROS_DISTRO} sh -c 'cat /etc/apt/sources.list | grep docker.com' >> archives/tork-defaults.list;
+	docker run --rm tork/${ROS_DISTRO} sh -c 'cat /etc/apt/sources.list | grep docker.com || echo ""' >> archives/tork-defaults.list;
 	cat -n archives/tork-defaults.list
 
 archives/tork-defaults.key:
