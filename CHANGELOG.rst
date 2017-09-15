@@ -2,8 +2,8 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.4 (2017-09-15)
+------------------
 * Fix `#37 <https://github.com/tork-a/live-cd2/issues/37>`_ (`#39 <https://github.com/tork-a/live-cd2/issues/39>`_)
   * docker.com is back to sources.list.d again....
   * use latest xenial kernel for inidgo
