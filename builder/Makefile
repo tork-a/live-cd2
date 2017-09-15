@@ -186,7 +186,7 @@ archives/tork-defaults.list:
 	## get from docker
 	mkdir -p archives/
 	docker run --rm tork/${ROS_DISTRO} sh -c 'cat /etc/apt/sources.list.d/*.list' > archives/tork-defaults.list;
-	docker run --rm tork/${ROS_DISTRO} sh -c 'cat /etc/apt/sources.list | grep docker.com' >> archives/tork-defaults.list;
+	docker run --rm tork/${ROS_DISTRO} sh -c 'cat /etc/apt/sources.list | grep docker.com || echo ""' >> archives/tork-defaults.list;
 	cat -n archives/tork-defaults.list
 
 archives/tork-defaults.key:
@@ -258,7 +258,7 @@ endif
 	##
 	sh -x ./tork-defaults-config --release ${RELEASE} --package tork-defaults_0.1_all.deb --components main,restricted,universe,multiverse # --ppa xorg-edgers/ppa
 	test "${RELEASE}" = "trusty" && sed -i 's@-hwe-16.04@@' config/chroot config/package-lists/* || echo "OK" # -hwe-16.04 is not available on indigo/trusty
-
+	test "${RELEASE}" = "trusty" && sed -i 's@linux-signed-generic@linux-signed-generic-lts-xenial@' config/chroot config/package-lists/* || echo "OK" # indigo/trusty needs latest kernel
 	# add-apt-repository generate fiels in archvies, since lb config cleans config/archives
 	$(call colorecho, "make add-apt-repository")
 	make add-apt-repository
