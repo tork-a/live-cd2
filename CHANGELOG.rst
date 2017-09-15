@@ -2,6 +2,16 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* Fix `#37 <https://github.com/tork-a/live-cd2/issues/37>`_ (`#39 <https://github.com/tork-a/live-cd2/issues/39>`_)
+  * docker.com is back to sources.list.d again....
+  * use latest xenial kernel for inidgo
+
+* .github_release.sh: fix .github_release
+* .github_release.sh: no need to create branch?
+* Contributors: Kei Okada
+
 3.0.3 (2017-08-11)
 ------------------
 * fix circleci error 08.10 (`#36 <https://github.com/tork-a/live-cd2/issues/36>`_)
