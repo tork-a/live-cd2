@@ -70,7 +70,7 @@ RUN adduser tork dialout
 RUN apt-get update && echo "@DATE@"
 
 # install dev. tools
-RUN apt-get -y install aptitude git ntp emacs vim wget curl
+RUN apt-get -y install aptitude git ntp emacs vim wget curl bash-completion
 
 # for japanese environment
 RUN apt-get -y install language-pack-gnome-ja latex-cjk-japanese xfonts-intl-japanese ibus-mozc
