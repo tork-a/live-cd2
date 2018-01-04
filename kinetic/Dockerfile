@@ -42,7 +42,7 @@ RUN echo ";; emacs settings\n\
 (global-set-key \"\C-h\" 'backward-delete-char)\n\
 (global-set-key \"\M-g\" 'goto-line)\n\
 (global-unset-key \"\C-o\" )\n\
-
+\n\
 (setq rosdistro (getenv \"ROS_DISTRO\"))\n\
 (add-to-list 'load-path (format \"/opt/ros/%s/share/emacs/site-lisp\" (or rosdistro \"kinetic\")))\n\
 (require 'rosemacs)\n\
