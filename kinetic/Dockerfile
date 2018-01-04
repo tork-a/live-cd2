@@ -84,14 +84,14 @@ RUN apt-get -y install ros-$ROS_DISTRO-jsk-rviz-plugins
 
 # ros robot packages
 RUN apt-get -y install ros-$ROS_DISTRO-navigation-stage
-#RUN apt-get -y install ros-$ROS_DISTRO-denso
-#RUN apt-get -y install ros-$ROS_DISTRO-rtmros-nextage
+RUN apt-get -y install ros-$ROS_DISTRO-denso
+RUN apt-get -y install ros-$ROS_DISTRO-rtmros-nextage
 #RUN apt-get -y install ros-$ROS_DISTRO-hakuto
 #RUN apt-get -y install ros-$ROS_DISTRO-baxter-sdk ros-$ROS_DISTRO-baxter-simulator
 #RUN apt-get -y install ros-$ROS_DISTRO-fetch-gazebo-demo ros-$ROS_DISTRO-fetch-teleop
 #RUN apt-get -y install ros-$ROS_DISTRO-pr2-simulator ros-$ROS_DISTRO-pr2-navigation
-#RUN apt-get -y install ros-$ROS_DISTRO-teleop-twist-joy ros-$ROS_DISTRO-teleop-twist-keyboard
-#RUN apt-get -y install ros-$ROS_DISTRO-uvc-camera ros-$ROS_DISTRO-opencv-apps
+RUN apt-get -y install ros-$ROS_DISTRO-teleop-twist-joy ros-$ROS_DISTRO-teleop-twist-keyboard
+RUN apt-get -y install ros-$ROS_DISTRO-uvc-camera ros-$ROS_DISTRO-opencv-apps
 
 RUN apt-get -y install ros-$ROS_DISTRO-rosemacs
 
