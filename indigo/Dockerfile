@@ -157,6 +157,9 @@ RUN apt-get -y install gnuplot-x11
 # install fcitx-mozc (https://github.com/tork-a/live-cd2/issues/23#issuecomment-339284177)
 RUN apt-get -y install fcitx-mozc
 
+#
+RUN apt-get -y install gdebi-core indicator-multiload unity-tweak-tool gitk
+
 ## clean up
 RUN apt-get clean
 
