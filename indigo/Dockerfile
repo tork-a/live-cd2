@@ -147,6 +147,10 @@ RUN apt-get -y install font-manager
 # json parser
 RUN apt-get -y install jq
 
+# use small files in mongodb
+RUN echo "\n# disable mongodb small files (https://github.com/tork-a/live-cd2/issues/28)\n" >> /etc/mongodb.conf
+RUN echo "smallfiles = true" >> /etc/mongodb.conf
+
 ## clean up
 RUN apt-get clean
 
