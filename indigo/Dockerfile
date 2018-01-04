@@ -151,6 +151,12 @@ RUN apt-get -y install jq
 RUN echo "\n# disable mongodb small files (https://github.com/tork-a/live-cd2/issues/28)\n" >> /etc/mongodb.conf
 RUN echo "smallfiles = true" >> /etc/mongodb.conf
 
+# install gnuplot-x11 https://github.com/tork-a/live-cd2/issues/23#issuecomment-249898462
+RUN apt-get -y install gnuplot-x11
+
+# install fcitx-mozc (https://github.com/tork-a/live-cd2/issues/23#issuecomment-339284177)
+RUN apt-get -y install fcitx-mozc
+
 ## clean up
 RUN apt-get clean
 
