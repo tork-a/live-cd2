@@ -232,6 +232,10 @@ ifeq (${RELEASE},trusty)
 	echo "wget http://launchpad.net/ubuntu/+source/casper/1.360/+build/7346252/+files/casper_1.360_arm64.deb -O /tmp/casper_1.360_amd64.deb" >> tork-defaults/hooks/chroot
 	echo "sudo dpkg -x /tmp/casper_1.360_amd64.deb /tmp/casper-src" >> tork-defaults/hooks/chroot
 	echo "sudo cp /tmp/casper-src/usr/share/initramfs-tools/scripts/casper /usr/share/initramfs-tools/scripts/casper" >> tork-defaults/hooks/chroot
+
+	$(call colorecho, "fix WARNING: apt does not have a stable CLI interface yet. Use with caution in scripts")
+	sudo sed -i 's@apt clean@apt-get clean@' /usr/share/livecd-rootfs/live-build/auto/build
+	sudo sed -i 's@apt clean@apt-get clean@' /usr/share/livecd-rootfs/live-build/ubuntu-cpc/hooks/999-cpc-fixes.chroot
 endif
 	cat -n tork-defaults/hooks/chroot
 
@@ -281,7 +285,6 @@ endif
 
 	$(call colorecho, "ubiquity neeed sudo") # https://github.com/k-okada/live-cd2/issues/9
 	echo "sed -i 's@sh -c@sudo sh -c@' /usr/share/applications/ubiquity.desktop" >> config/hooks/90_ubiquity.desktop.sudo.chroot
-
 
 	## use latest kernel
 	#$(call colorecho, "use latest kernel")
