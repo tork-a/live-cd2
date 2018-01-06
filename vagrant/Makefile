@@ -14,7 +14,7 @@ endif
 
 install-vbox: install-vagrant
 	$(call colorecho, "install virtualbox")
-	dpkg-query -W -f='$${Status} $${Version}\n' virtualbox || sudo apt-get -y install virtualbox virtualbox-dkms
+	dpkg-query -W -f='$${Status} $${Version}\n' virtualbox; sudo apt-get -y install virtualbox virtualbox-dkms
 
 install-ec2: install-vagrant
 	$(call colorecho, "install vagrant plugins")
@@ -23,7 +23,7 @@ install-ec2: install-vagrant
 install-vagrant: vagrant_1.8.1_x86_64.deb
 	$(call colorecho, "install vagrant")
 	vagrant --version || sudo dpkg -i vagrant_1.8.1_x86_64.deb
-	dpkg-query -W -f='$${Status} $${Version}\n' sshpass || sudo apt-get -y install sshpass
+	dpkg-query -W -f='$${Status} $${Version}\n' sshpass; sudo apt-get -y install sshpass
 	vagrant plugin list | grep vagrant-global-status || vagrant plugin install vagrant-global-status
 
 add-vbox: install-vagrant trusty-server-cloudimg-amd64-vagrant-disk1.box
