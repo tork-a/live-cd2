@@ -280,8 +280,9 @@ endif
 	cat config/includes.chroot/etc/rc.local
 
 	$(call colorecho, "change default password")
-	echo "sed -i 's@blank password@password@' /usr/share/initramfs-tools/scripts/casper-bottom/25adduser" >> config/hooks/80_change_user_name.chroot
-	echo "sed -i 's@U6aMy0wojraho@U6CjLveNVb5n.@' /usr/share/initramfs-tools/scripts/casper-bottom/25adduser" >> config/hooks/80_change_user_name.chroot
+	# https://unix.stackexchange.com/questions/225217/what-hash-algorithms-can-i-use-in-preseeds-passwd-user-password-crypted-entry
+	echo "sed -i 's@^\\(db_set passwd/user-password-crypted.*$$\\)@# \\\\1\\\\ndb_set passwd/user-password password password\\\\ndb_set passwd/user-password-again password password@' /usr/share/initramfs-tools/scripts/casper-bottom/25adduser" >> config/hooks/90_ubiquity.desktop.sudo.chroot
+	echo "cat /usr/share/initramfs-tools/scripts/casper-bottom/25adduser" >> config/hooks/90_ubiquity.desktop.sudo.chroot
 
 	$(call colorecho, "ubiquity neeed sudo") # https://github.com/k-okada/live-cd2/issues/9
 	echo "sed -i 's@sh -c@sudo sh -c@' /usr/share/applications/ubiquity.desktop" >> config/hooks/90_ubiquity.desktop.sudo.chroot
