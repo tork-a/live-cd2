@@ -59,9 +59,8 @@ source \`catkin locate --shell-verbs\`\n\
 # make home directory (user name other than ubuntu is not woking because it is hard corded /usr/share/livecd-rootfs/live-build/auto/config)
 # we should not run this on live-build
 RUN apt-get -y install sudo
-RUN getent group 999 || groupadd -g 999 tork
 #RUN useradd -p `perl -e "print(crypt('password', 'U6'));"` tork
-RUN useradd -m -u 999 -g 999 -p U6CjLveNVb5n. tork || /bin/echo -e "password\npassword\n" | sudo passwd tork
+RUN useradd -m -u 999 -g 100 -p U6CjLveNVb5n. tork || /bin/echo -e "password\npassword\n" | sudo passwd tork
 RUN echo "tork ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/tork
 RUN adduser tork dialout
 
