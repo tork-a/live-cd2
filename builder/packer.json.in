@@ -19,6 +19,9 @@
       "headless": "true",
       "boot_wait": "4s",
       "disk_size": 10140,
+      "qemuargs": [
+            [ "-m", "1G" ]
+      ],
       "http_directory": "http",
       "iso_checksum": "@ISO_MD5SUM@",
       "iso_checksum_type": "md5",
