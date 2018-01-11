@@ -68,10 +68,10 @@ test:
     - cd kinetic && make test
     # check apps
     - echo "Building and Running Tests for Hakuto apps"
-    - cd hakuto && make all && make test
+    ####    - cd hakuto && make all && make test
     # build iso
     - echo "Running ISO Builder"
-    - cd builder && VM_TYPE=$VM_TYPE ROS_DISTRO=indigo  make && ls -al binary.hybrid.iso
+    ####    - cd builder && VM_TYPE=$VM_TYPE ROS_DISTRO=indigo  make && ls -al binary.hybrid.iso
     - cd builder && VM_TYPE=$VM_TYPE ROS_DISTRO=kinetic make && ls -al binary.hybrid.iso
     - ls -al builder/*.iso
     # test iso
