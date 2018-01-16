@@ -282,9 +282,10 @@ endif
 	cat config/includes.chroot/etc/rc.local
 
 	$(call colorecho, "change default password")
+	echo -e "#!/bin/sh\nadduser --gecos tork --disabled-login tork;echo \"tork:password\" | chpasswd" > config/hooks/01-setup_user.chroot
 	# https://unix.stackexchange.com/questions/225217/what-hash-algorithms-can-i-use-in-preseeds-passwd-user-password-crypted-entry
-	echo "sed -i \"s@^\\(db_set passwd/user-password-crypted.*$$\\)@# \\\\1\\\\ndb_set passwd/user-password-crypted '\\\$$6\\\$$7QIsWAWh\\\$$eCJJATO7Xw71waswcbU5Dc/uXJb3ZwFBFq.HIhkkJcGs8mXs9IL16zmIqpRDniduDran//8gyCFc0O9r6gIcJ1'@\" /usr/share/initramfs-tools/scripts/casper-bottom/25adduser" >> config/hooks/90_ubiquity.desktop.sudo.chroot
-	echo "cat /usr/share/initramfs-tools/scripts/casper-bottom/25adduser" >> config/hooks/90_ubiquity.desktop.sudo.chroot
+	#echo "sed -i \"s@^\\(db_set passwd/user-password-crypted.*$$\\)@# \\\\1\\\\ndb_set passwd/user-password-crypted '\\\$$6\\\$$7QIsWAWh\\\$$eCJJATO7Xw71waswcbU5Dc/uXJb3ZwFBFq.HIhkkJcGs8mXs9IL16zmIqpRDniduDran//8gyCFc0O9r6gIcJ1'@\" /usr/share/initramfs-tools/scripts/casper-bottom/25adduser" >> config/hooks/90_ubiquity.desktop.sudo.chroot
+	#echo "cat /usr/share/initramfs-tools/scripts/casper-bottom/25adduser" >> config/hooks/90_ubiquity.desktop.sudo.chroot
 
 	$(call colorecho, "ubiquity neeed sudo") # https://github.com/k-okada/live-cd2/issues/9
 	echo "sed -i 's@sh -c@sudo sh -c@' /usr/share/applications/ubiquity.desktop" >> config/hooks/90_ubiquity.desktop.sudo.chroot
