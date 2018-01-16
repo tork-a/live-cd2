@@ -123,7 +123,8 @@ tork-docker.sh:
 	docker history --no-trunc=true tork/${ROS_DISTRO} | tr -s " " | sed -e 's/$$ROS_DISTRO/${ROS_DISTRO}/g' | /bin/sed -e 's,#(nop) USER \[\(.*\)\],sudo -u \1 -H -i <<"EOF",' | /bin/sed -e 's,#(nop) WORKDIR \(.*\),set -x; cd \1,' | /bin/sed -e 's,#(nop) ENV \(.*\),export \1,' | /bin/sed -n -e 's,[0-9.*]*\s*[kMG]\?B\s*$$,,p' | sed -n -e 's,.*/bin/sh -c \(.*\),\1,p' | /bin/sed -e 's,^\(.*\)#CIRCLECI#,#CIRCLECI# \1,' | tac | sed '0,/CMD\ \[\"\/bin\/bash\"\]/d' | tee tork-docker.sh
 	echo "EOF" >> tork-docker.sh
 	# workaround for https://github.com/ros-infrastructure/catkin_pkg/pull/190
-	sed -i 's@apt-get clean@apt-get clean; sed -i "s/< 100:/< 1000:/" /usr/lib/python2.7/dist-packages/catkin_pkg/packages.py; cat /usr/lib/python2.7/dist-packages/catkin_pkg/packages.py@' tork-docker.sh
+	#sed -i 's@apt-get clean@apt-get clean; sed -i "s/< 100:/< 1000:/" /usr/lib/python2.7/dist-packages/catkin_pkg/packages.py; cat /usr/lib/python2.7/dist-packages/catkin_pkg/packages.py@' tork-docker.sh
+	sed -i 's@wget -qO- https://get.docker.com/ | sh@wget -qO- http://get.docker.com/ | sed "s%https://%http://%" | sh@' tork-docker.sh
 	cat -n tork-docker.sh
 
 tork-defaults:
