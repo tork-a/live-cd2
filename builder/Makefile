@@ -187,6 +187,7 @@ archives/tork-defaults.list:
 	mkdir -p archives/
 	docker run --rm tork/${ROS_DISTRO} sh -c 'cat /etc/apt/sources.list.d/*.list' > archives/tork-defaults.list;
 	docker run --rm tork/${ROS_DISTRO} sh -c 'cat /etc/apt/sources.list | grep docker.com || echo ""' >> archives/tork-defaults.list;
+	### sed -i 's@https://@http://@' archives/tork-defaults.list
 	cat -n archives/tork-defaults.list
 
 archives/tork-defaults.key:
@@ -258,6 +259,7 @@ endif
 	# cat /usr/lib/live/build/lb_chroot_archives
 	# sudo sed -i '0,/set -e/s//#set -e\nset -x/' /usr/lib/live/build/lb_chroot_install-packages
 	# cat /usr/lib/live/build/lb_chroot_install-packages
+	### sed -i 's@lb config@lb config --apt-http-proxy "http://localhost:3142"@' tork-defaults-config
 	##
 	##
 	$(call colorecho, "enable to use https")
