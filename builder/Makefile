@@ -219,7 +219,7 @@ iso-build:
 	make tork-defaults/debian/tork-defaults.install
 
 	# custom from Dockerfile
-	$(call colorecho, "cat tork-docker.sh >> tork-defaults/hooks/chroot")
+	$(call colorecho, "cat tork-docker.sh \>\> tork-defaults/hooks/chroot")
 	echo -e "\n## BEGIN tork-docker.sh\n" >> tork-defaults/hooks/chroot
 	cat tork-docker.sh >> tork-defaults/hooks/chroot
 	echo -e "\n## END tork-docker.sh\n" >> tork-defaults/hooks/chroot
@@ -239,7 +239,7 @@ ifeq (${RELEASE},trusty)
 endif
 	cat -n tork-defaults/hooks/chroot
 
-	$(call colorecho, "cat depends.txt >> tork-defaults/depends.txt")
+	$(call colorecho, "cat depends.txt \>\> tork-defaults/depends.txt")
 	cat depends.txt >> tork-defaults/depends.txt
 	cat -n tork-defaults/depends.txt
 
