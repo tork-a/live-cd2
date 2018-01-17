@@ -42,7 +42,7 @@ RUN echo ";; emacs settings\n\
 (global-set-key \"\C-h\" 'backward-delete-char)\n\
 (global-set-key \"\M-g\" 'goto-line)\n\
 (global-unset-key \"\C-o\" )\n\
-
+\n\
 (setq rosdistro (getenv \"ROS_DISTRO\"))\n\
 (add-to-list 'load-path (format \"/opt/ros/%s/share/emacs/site-lisp\" (or rosdistro \"kinetic\")))\n\
 (require 'rosemacs)\n\
@@ -59,9 +59,8 @@ source \`catkin locate --shell-verbs\`\n\
 # make home directory (user name other than ubuntu is not woking because it is hard corded /usr/share/livecd-rootfs/live-build/auto/config)
 # we should not run this on live-build
 RUN apt-get -y install sudo
-RUN getent group 999 || groupadd -g 999 tork
 #RUN useradd -p `perl -e "print(crypt('password', 'U6'));"` tork
-RUN useradd -m -u 999 -g 999 -p U6CjLveNVb5n. tork || /bin/echo -e "password\npassword\n" | sudo passwd tork
+RUN useradd -m -u 999 -g 100 -p U6CjLveNVb5n. tork || /bin/echo -e "password\npassword\n" | sudo passwd tork
 RUN echo "tork ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/tork
 RUN adduser tork dialout
 
@@ -84,14 +83,14 @@ RUN apt-get -y install ros-$ROS_DISTRO-jsk-rviz-plugins
 
 # ros robot packages
 RUN apt-get -y install ros-$ROS_DISTRO-navigation-stage
-#RUN apt-get -y install ros-$ROS_DISTRO-denso
-#RUN apt-get -y install ros-$ROS_DISTRO-rtmros-nextage
+RUN apt-get -y install ros-$ROS_DISTRO-denso
+RUN apt-get -y install ros-$ROS_DISTRO-rtmros-nextage
 #RUN apt-get -y install ros-$ROS_DISTRO-hakuto
 #RUN apt-get -y install ros-$ROS_DISTRO-baxter-sdk ros-$ROS_DISTRO-baxter-simulator
 #RUN apt-get -y install ros-$ROS_DISTRO-fetch-gazebo-demo ros-$ROS_DISTRO-fetch-teleop
 #RUN apt-get -y install ros-$ROS_DISTRO-pr2-simulator ros-$ROS_DISTRO-pr2-navigation
-#RUN apt-get -y install ros-$ROS_DISTRO-teleop-twist-joy ros-$ROS_DISTRO-teleop-twist-keyboard
-#RUN apt-get -y install ros-$ROS_DISTRO-uvc-camera ros-$ROS_DISTRO-opencv-apps
+RUN apt-get -y install ros-$ROS_DISTRO-teleop-twist-joy ros-$ROS_DISTRO-teleop-twist-keyboard
+RUN apt-get -y install ros-$ROS_DISTRO-uvc-camera ros-$ROS_DISTRO-opencv-apps
 
 RUN apt-get -y install ros-$ROS_DISTRO-rosemacs
 
@@ -147,6 +146,27 @@ RUN apt-get -y install font-manager
 
 # json parser
 RUN apt-get -y install jq
+
+# use small files in mongodb
+RUN echo "\n# disable mongodb small files (https://github.com/tork-a/live-cd2/issues/28)\n" >> /etc/mongodb.conf
+RUN echo "smallfiles = true" >> /etc/mongodb.conf
+
+# install gnuplot-x11 https://github.com/tork-a/live-cd2/issues/23#issuecomment-249898462
+## RUN apt-get -y install gnuplot-x11
+## COULD NOT INSTALL gnuplot-x11 DUE TO
+## dpkg-gencontrol: warning: can't parse dependency gnuplot-nox
+## c.f. https://circleci.com/gh/tork-a/live-cd2/623
+
+
+# install fcitx-mozc (https://github.com/tork-a/live-cd2/issues/23#issuecomment-339284177)
+RUN apt-get -y install fcitx-mozc
+
+#
+RUN apt-get -y install gdebi-core indicator-multiload gitk
+## COULD NOT INSTALL unity-tweak-tool DUE TO
+## The following packages have unmet dependencies:
+##  tork-defaults : Depends: xserver-xorg-input-vmmouse but it is not going to be installed
+## c.f. https://circleci.com/gh/tork-a/live-cd2/623
 
 ## clean up
 RUN apt-get clean

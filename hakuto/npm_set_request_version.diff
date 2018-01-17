@@ -1,0 +1,11 @@
+diff -r 2cbc96acee21 package.json
+--- a/package.json	Thu Oct 20 13:37:14 2016 -0700
++++ b/package.json	Thu Jan 04 10:52:39 2018 +0000
+@@ -12,6 +12,7 @@
+   },
+   "dependencies":
+   {
++    "request": "2.81.0",
+     "websocket": "",
+     "http-server": "",
+     "node-gyp":""

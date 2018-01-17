@@ -34,8 +34,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
                                     'Ebs.DeleteOnTermination' => 'true'}]
 
       aws.keypair_name      = 'vagrant'
-      #aws.instance_type     = "t2.micro"
-      aws.instance_type     = "m3.large"
+      #aws.instance_type     = "t2.micro" # 1 cpu, 1G memory
+      #aws.instance_type     = "m3.large" # 2 cpu, 7.5G memory
+      aws.instance_type     = "m3.xlarge" # 4 cpu, 15G memory      
 
       aws.security_groups = [ 'sg-7bc99803' ]
       aws.subnet_id = "subnet-797ff953"

@@ -27,6 +27,11 @@ RUN hg clone https://bitbucket.org/osrf/gzweb && \
 RUN sudo ln -sf /usr/bin/nodejs /usr/bin/node ## ./deploy.sh requires node command
 RUN mkdir -p ~/gzweb/http/client/assets       ## ./webify_models_v2.py requirs
 
+# latest request fails due to 'Use of const in strict mode', had to lock request to 2.81.0  https://github.com/sass/node-sass/issues/2100
+## ~/gzweb does not work somehow..
+COPY npm_set_request_version.diff gzweb/
+RUN cd ~/gzweb && patch -p1 < npm_set_request_version.diff
+
 # deply
 RUN cd ~/gzweb && \
     ./deploy.sh -m local -c
