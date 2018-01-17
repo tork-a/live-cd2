@@ -38,9 +38,11 @@ dependencies:
     #      rm -f ~/docker/dockerfile.digest
     #   fi
     # - if [ -e ~/docker/dockerfile.digest ]; then docker load --input ~/docker/tork-indigo.tar; fi
-    - cd indigo; make all
+    ######## - cd indigo; make all
+    - docker pull tork/indigo
+    - docker pull tork/kinetic
     - docker save tork/indigo > ~/docker/tork-indigo.tar
-    - cd kinetic; make all
+    ######## - cd kinetic; make all
     - docker save tork/kinetic > ~/docker/tork-kinetic.tar
     # - if [ ! -e ~/docker/dockerfile.digest ]; then docker save tork/indigo > ~/docker/tork-indigo.tar; fi
     # - if [ ! -e ~/docker/dockerfile.digest ]; then md5sum indigo/Dockerfile  | cut -d' ' -f1 > ~/docker/dockerfile.digest; fi
