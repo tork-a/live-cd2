@@ -201,7 +201,6 @@ archives/tork-defaults.key:
 iso-build:
 	# check
 	ls -al
-	sudo rm -fr cache
 
 	# install
 	$(call colorecho, "install ubuntu-defaults-builder build-essential")
