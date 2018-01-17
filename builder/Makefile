@@ -264,7 +264,6 @@ endif
 	##
 	##
 	$(call colorecho, "enable to use https")
-	sudo sed -i '0,/Set_defaults/s//Set_defaults\nset -x\nchroot chroot apt-get install -y --force-yes apt-transport-https/' /usr/lib/live/build/lb_chroot_archives
 	sed -i 's@lb config@LB_BOOTSTRAP_INCLUDE="apt-transport-https gnupg" lb config@' tork-defaults-config
 
 	$(call colorecho, "run tork-defaults-config")
