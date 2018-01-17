@@ -123,7 +123,8 @@ tork-docker.sh:
 	docker history --no-trunc=true tork/${ROS_DISTRO} | tr -s " " | sed -e 's/$$ROS_DISTRO/${ROS_DISTRO}/g' | /bin/sed -e 's,#(nop) USER \[\(.*\)\],sudo -u \1 -H -i <<"EOF",' | /bin/sed -e 's,#(nop) WORKDIR \(.*\),set -x; cd \1,' | /bin/sed -e 's,#(nop) ENV \(.*\),export \1,' | /bin/sed -n -e 's,[0-9.*]*\s*[kMG]\?B\s*$$,,p' | sed -n -e 's,.*/bin/sh -c \(.*\),\1,p' | /bin/sed -e 's,^\(.*\)#CIRCLECI#,#CIRCLECI# \1,' | tac | sed '0,/CMD\ \[\"\/bin\/bash\"\]/d' | tee tork-docker.sh
 	echo "EOF" >> tork-docker.sh
 	# workaround for https://github.com/ros-infrastructure/catkin_pkg/pull/190
-	sed -i 's@apt-get clean@apt-get clean; sed -i "s/< 100:/< 1000:/" /usr/lib/python2.7/dist-packages/catkin_pkg/packages.py; cat /usr/lib/python2.7/dist-packages/catkin_pkg/packages.py@' tork-docker.sh
+	#sed -i 's@apt-get clean@apt-get clean; sed -i "s/< 100:/< 1000:/" /usr/lib/python2.7/dist-packages/catkin_pkg/packages.py; cat /usr/lib/python2.7/dist-packages/catkin_pkg/packages.py@' tork-docker.sh
+	sed -i 's@wget -qO- https://get.docker.com/ | sh@wget -qO- http://get.docker.com/ | sed "s%https://%http://%" | sh@' tork-docker.sh
 	cat -n tork-docker.sh
 
 tork-defaults:
@@ -187,6 +188,8 @@ archives/tork-defaults.list:
 	mkdir -p archives/
 	docker run --rm tork/${ROS_DISTRO} sh -c 'cat /etc/apt/sources.list.d/*.list' > archives/tork-defaults.list;
 	docker run --rm tork/${ROS_DISTRO} sh -c 'cat /etc/apt/sources.list | grep docker.com || echo ""' >> archives/tork-defaults.list;
+	sed -i 's@https://@http://@' archives/tork-defaults.list
+	sed -i 's@\[.*\]@@' archives/tork-defaults.list
 	cat -n archives/tork-defaults.list
 
 archives/tork-defaults.key:
@@ -198,11 +201,13 @@ archives/tork-defaults.key:
 iso-build:
 	# check
 	ls -al
-	sudo rm -fr cache
 
 	# install
 	$(call colorecho, "install ubuntu-defaults-builder build-essential")
 	sudo apt-get install -y ubuntu-defaults-builder build-essential xorriso
+
+	$(call colorecho, "install apt-cacher-ng")
+	sudo apt-get install -y apt-cacher-ng
 
 	$(call colorecho, "make tork-docker.sh")
 	make tork-docker.sh
@@ -219,7 +224,7 @@ iso-build:
 	make tork-defaults/debian/tork-defaults.install
 
 	# custom from Dockerfile
-	$(call colorecho, "cat tork-docker.sh >> tork-defaults/hooks/chroot")
+	$(call colorecho, "cat tork-docker.sh \>\> tork-defaults/hooks/chroot")
 	echo -e "\n## BEGIN tork-docker.sh\n" >> tork-defaults/hooks/chroot
 	cat tork-docker.sh >> tork-defaults/hooks/chroot
 	echo -e "\n## END tork-docker.sh\n" >> tork-defaults/hooks/chroot
@@ -227,13 +232,19 @@ iso-build:
 ifeq (${RELEASE},trusty)
 	$(call colorecho, "use casper for vivid")
 	## work around for casper-rw partition http://askubuntu.com/a/725709/469233
-	echo "wget http://archive.ubuntu.com/ubuntu/pool/main/c/casper/casper_1.360_amd64.deb -O /tmp/casper_1.360_amd64.deb" >> tork-defaults/hooks/chroot
+	## As of Jan 2018, we nolonger have casper 360 on archive.ubuntu.com
+	## echo "wget http://archive.ubuntu.com/ubuntu/pool/main/c/casper/casper_1.360_amd64.deb -O /tmp/casper_1.360_amd64.deb" >> tork-defaults/hooks/chroot
+	echo "wget http://launchpad.net/ubuntu/+source/casper/1.360/+build/7346252/+files/casper_1.360_arm64.deb -O /tmp/casper_1.360_amd64.deb" >> tork-defaults/hooks/chroot
 	echo "sudo dpkg -x /tmp/casper_1.360_amd64.deb /tmp/casper-src" >> tork-defaults/hooks/chroot
 	echo "sudo cp /tmp/casper-src/usr/share/initramfs-tools/scripts/casper /usr/share/initramfs-tools/scripts/casper" >> tork-defaults/hooks/chroot
+
+	$(call colorecho, "fix WARNING: apt does not have a stable CLI interface yet. Use with caution in scripts")
+	sudo sed -i 's@apt clean@apt-get clean@' /usr/share/livecd-rootfs/live-build/auto/build
+	sudo sed -i 's@apt clean@apt-get clean@' /usr/share/livecd-rootfs/live-build/ubuntu-cpc/hooks/999-cpc-fixes.chroot
 endif
 	cat -n tork-defaults/hooks/chroot
 
-	$(call colorecho, "cat depends.txt >> tork-defaults/depends.txt")
+	$(call colorecho, "cat depends.txt \>\> tork-defaults/depends.txt")
 	cat depends.txt >> tork-defaults/depends.txt
 	cat -n tork-defaults/depends.txt
 
@@ -252,10 +263,13 @@ endif
 	# cat /usr/lib/live/build/lb_chroot_archives
 	# sudo sed -i '0,/set -e/s//#set -e\nset -x/' /usr/lib/live/build/lb_chroot_install-packages
 	# cat /usr/lib/live/build/lb_chroot_install-packages
+	sed -i 's@lb config@lb config --apt-http-proxy "http://localhost:3142"@' tork-defaults-config
 	##
-	$(call colorecho, "FORCE CHANGE enable to use https")
-	sudo sed -i '0,/Set_defaults/s//Set_defaults\nset -x\nchroot chroot apt-get install -y --force-yes apt-transport-https/' /usr/lib/live/build/lb_chroot_archives
 	##
+	$(call colorecho, "enable to use https")
+	sed -i 's@lb config@LB_BOOTSTRAP_INCLUDE="apt-transport-https gnupg" lb config@' tork-defaults-config
+
+	$(call colorecho, "run tork-defaults-config")
 	sh -x ./tork-defaults-config --release ${RELEASE} --package tork-defaults_0.1_all.deb --components main,restricted,universe,multiverse # --ppa xorg-edgers/ppa
 	test "${RELEASE}" = "trusty" && sed -i 's@-hwe-16.04@@' config/chroot config/package-lists/* || echo "OK" # -hwe-16.04 is not available on indigo/trusty
 	test "${RELEASE}" = "trusty" && sed -i 's@linux-signed-generic@linux-signed-generic-lts-xenial@' config/chroot config/package-lists/* || echo "OK" # indigo/trusty needs latest kernel
@@ -274,12 +288,13 @@ endif
 	cat config/includes.chroot/etc/rc.local
 
 	$(call colorecho, "change default password")
-	echo "sed -i 's@blank password@password@' /usr/share/initramfs-tools/scripts/casper-bottom/25adduser" >> config/hooks/80_change_user_name.chroot
-	echo "sed -i 's@U6aMy0wojraho@U6CjLveNVb5n.@' /usr/share/initramfs-tools/scripts/casper-bottom/25adduser" >> config/hooks/80_change_user_name.chroot
+	echo -e "#!/bin/sh\nadduser --gecos tork --disabled-login tork;echo \"tork:password\" | chpasswd" > config/hooks/01-setup_user.chroot
+	# https://unix.stackexchange.com/questions/225217/what-hash-algorithms-can-i-use-in-preseeds-passwd-user-password-crypted-entry
+	#echo "sed -i \"s@^\\(db_set passwd/user-password-crypted.*$$\\)@# \\\\1\\\\ndb_set passwd/user-password-crypted '\\\$$6\\\$$7QIsWAWh\\\$$eCJJATO7Xw71waswcbU5Dc/uXJb3ZwFBFq.HIhkkJcGs8mXs9IL16zmIqpRDniduDran//8gyCFc0O9r6gIcJ1'@\" /usr/share/initramfs-tools/scripts/casper-bottom/25adduser" >> config/hooks/90_ubiquity.desktop.sudo.chroot
+	#echo "cat /usr/share/initramfs-tools/scripts/casper-bottom/25adduser" >> config/hooks/90_ubiquity.desktop.sudo.chroot
 
 	$(call colorecho, "ubiquity neeed sudo") # https://github.com/k-okada/live-cd2/issues/9
 	echo "sed -i 's@sh -c@sudo sh -c@' /usr/share/applications/ubiquity.desktop" >> config/hooks/90_ubiquity.desktop.sudo.chroot
-
 
 	## use latest kernel
 	#$(call colorecho, "use latest kernel")
@@ -312,9 +327,9 @@ packer-postinstall.sh: packer-postinstall.sh.in
 packer:
 	# download packer
 	wget https://releases.hashicorp.com/packer/1.0.3/packer_1.0.3_linux_amd64.zip
-	dpkg-query -W -f='$${Status} $${Version}\n' unzip || sudo apt-get -y install unzip
+	dpkg-query -W -f='$${Status} $${Version}\n' unzip; sudo apt-get -y install unzip
 	unzip packer_1.0.3_linux_amd64.zip
-	dpkg-query -W -f='$${Status} $${Version}\n' qemu-system-x86 || sudo apt-get -y install qemu-system-x86
+	dpkg-query -W -f='$${Status} $${Version}\n' qemu-system-x86; sudo apt-get -y install qemu-system-x86
 	vagrant plugin list | grep qemu || vagrant plugin install qemu
 
 
