@@ -206,6 +206,9 @@ iso-build:
 	$(call colorecho, "install ubuntu-defaults-builder build-essential")
 	sudo apt-get install -y ubuntu-defaults-builder build-essential xorriso
 
+	$(call colorecho, "install apt-cacher-ng")
+	sudo apt-get install -y apt-cacher-ng
+
 	$(call colorecho, "make tork-docker.sh")
 	make tork-docker.sh
 
