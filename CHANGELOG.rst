@@ -2,6 +2,34 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add more packages (`#44 <https://github.com/tork-a/live-cd2/issues/44>`_)
+  * run docker pull to speed up?, and temp. remove hakuto test
+  * install apt-cacher-ng
+  * do not remove cache
+  * rm [.*] from tork-defaults.list
+  * https->http in get.docker.com
+  * add code to use apt-cacher-ng with --apt-http-prox in lb config
+  * use LB_BOOTSTRAP_INCLUDE to install apt-transport-https, gnupg
+  * escape > in call colorecho
+  * set qemu memory to 4G, use m3.xlarge
+  * use config/hook/ to setup local user
+  * we do not need tork group, use users(100)
+  * dpkg-quey do not return error on 'unknown ok not-installed'
+  * fix WARNING: apt does not have a stable CLI interface yet. Use with caution in scripts
+  * as of Jan 2018, we nolonger able to download casper 1.360 from archive.ubuntu.com
+
+  * install gnuplot-x11 and unity-tweak-tool cause failing...
+  * hakuto/Dockerfile: latest request fails due to 'Use of const in strict mode', had to lock request to 2.81.0  https://github.com/sass/node-sass/issues/2100
+  * kinetic/Dockerfile : install kinetic-released packages, denso, rtmros-nextage, teleop-twist-joy/keyboard, uvc-camera, opencv-apps
+  * install  gdebi-core indicator-multiload unity-tweak-tool gitk
+  * fix docker warning: Empty continuation lines will become errors in a future release.
+  * install gnuplot-x11, fcitx-mozc requested from `#23 <https://github.com/tork-a/live-cd2/issues/23>`_
+  * add smallfiles = true for Dockerfile (`#28 <https://github.com/tork-a/live-cd2/issues/28>`_), not sure if this is ok for 16.04 though
+  * indigo/Dockerfile : Add bash-completion package to be installed
+* Contributors: Kei Okada, Ryosuke Tajima
+
 3.0.4 (2017-09-15)
 ------------------
 * Fix `#37 <https://github.com/tork-a/live-cd2/issues/37>`_ (`#39 <https://github.com/tork-a/live-cd2/issues/39>`_)
