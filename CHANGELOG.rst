@@ -2,8 +2,8 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.5 (2018-01-18)
+------------------
 * add more packages (`#44 <https://github.com/tork-a/live-cd2/issues/44>`_)
   * run docker pull to speed up?, and temp. remove hakuto test
   * install apt-cacher-ng
