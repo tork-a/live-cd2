@@ -128,6 +128,7 @@ tork-docker.sh:
            /bin/sed -e 's,#(nop) ENV \(.*\),export \1,' | \
            /bin/sed -n -e 's,[0-9.*]*\s*[kMG]\?B\s*$$,,p' | \
            /bin/sed -n -e 's,.*/bin/sh -c \(.*\),\1,p' | \
+           /bin/sed -e 's/^echo/echo -e/' | \
            /bin/sed -e 's,^\(.*\)#CIRCLECI#,#CIRCLECI# \1,' | \
            tac | sed '0,/CMD\ \[\"\/bin\/bash\"\]/d' | tee tork-docker.sh
 	echo "EOF" >> tork-docker.sh
