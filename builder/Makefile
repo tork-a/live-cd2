@@ -263,6 +263,7 @@ endif
 	# build
 	$(call colorecho, "build tork-defaults package")
 	cd tork-defaults; dpkg-buildpackage -us -uc
+	dpkg -c tork-defaults_0.1_all.deb
 
 	## ubuntu-defaults-image
 	$(call colorecho, "run ubuntu-defaults-image \(config part\)")
