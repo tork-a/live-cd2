@@ -224,9 +224,6 @@ iso-build:
 	$(call colorecho, "make tork-docker.sh")
 	make tork-docker.sh
 
-	$(call colorecho, "make depends.txt")
-	make depends.txt
-
 	### ubuntu-defaults-image
 	$(call colorecho, "make tork-defaults")
 	make tork-defaults
@@ -255,10 +252,6 @@ ifeq (${RELEASE},trusty)
 	sudo sed -i 's@apt clean@apt-get clean@' /usr/share/livecd-rootfs/live-build/ubuntu-cpc/hooks/999-cpc-fixes.chroot
 endif
 	cat -n tork-defaults/hooks/chroot
-
-	$(call colorecho, "cat depends.txt \>\> tork-defaults/depends.txt")
-	cat depends.txt >> tork-defaults/depends.txt
-	cat -n tork-defaults/depends.txt
 
 	# build
 	$(call colorecho, "build tork-defaults package")
