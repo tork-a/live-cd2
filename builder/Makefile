@@ -217,6 +217,8 @@ iso-build:
 	# install
 	$(call colorecho, "install ubuntu-defaults-builder build-essential")
 	sudo apt-get install -y ubuntu-defaults-builder build-essential xorriso
+	$(call colorecho, "install distro-info")
+	sudo apt-get install -y distro-info
 
 	$(call colorecho, "install apt-cacher-ng")
 	sudo apt-get install -y apt-cacher-ng
@@ -301,7 +303,7 @@ endif
 
 	$(call colorecho, "ubiquity neeed sudo") # https://github.com/k-okada/live-cd2/issues/9
 	echo "sed -i 's@sh -c@sudo sh -c@' /usr/share/applications/ubiquity.desktop" >> config/hooks/90_ubiquity.desktop.sudo.chroot
-	echo "sed -i 's@RELEASE@\$$(lsb_release -rs)@' /usr/share/applications/ubiquity.desktop" >> config/hooks/90_ubiquity.desktop.sudo.chroot
+	echo "sed -i 's@RELEASE@$$(ubuntu-distro-info --all -f | grep -i ${RELEASE} | cut -d\  -f 2)@' /usr/share/applications/ubiquity.desktop" >> config/hooks/90_ubiquity.desktop.sudo.chroot
 
 	## use latest kernel
 	#$(call colorecho, "use latest kernel")
