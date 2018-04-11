@@ -2,8 +2,8 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+3.0.6 (2018-04-11)
+------------------
 * fix no workspace found in tork home direcotory (`#45 <https://github.com/tork-a/live-cd2/issues/45>`_)
   * fix /usr/share/applications/ubiquity.desktop
   * extract ubuntu version number using distro-info
