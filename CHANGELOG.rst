@@ -2,6 +2,24 @@
 Changelog for package live-cd
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* fix no workspace found in tork home direcotory (`#45 <https://github.com/tork-a/live-cd2/issues/45>`_)
+  * fix /usr/share/applications/ubiquity.desktop
+  * extract ubuntu version number using distro-info
+  * escape lsb_release
+  * rename ubiquity.desktop using Release name
+  * cat s3.txt
+  * catkin_ws in live-cd is not catkin-tool workspace, it is catkin_make workspace
+  * tork-defaults/depends.txt somehow distory tork-docker.sh in kinetic
+  * show contents of tork-defaults deb
+  * improve test commands
+  * rm do aws s3 after successful within CIRCLE_ARTIFACTS directory
+  * initialize chroot file
+  * use echo -e to escape \n
+  * rewrite docker hisotry --line
+* Contributors: Tokyo Opensource Robotics Developer 534
+
 3.0.5 (2018-01-18)
 ------------------
 * add more packages (`#44 <https://github.com/tork-a/live-cd2/issues/44>`_)
