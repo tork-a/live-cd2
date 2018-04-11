@@ -2,8 +2,15 @@
 
 set -e
 
-. /opt/ros/@ROS_DISTRO@/setup.bash
+rospack list # check .bashrc includes ROS settings
+
+. /opt/ros/@ROS_DISTRO@/setup.bash # check default ROS settings
 rospack list
+
+pwd  # show current directory
+find # show home directory
+cat .bashrc # show .bashrc
+cd catkin_ws && source devel/setup.bash && rostest rospy_tutorials talker_listener.launch
 
 
 
