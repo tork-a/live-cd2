@@ -135,7 +135,8 @@ RUN apt-get -y install inxi
 RUN apt-get -y install gimp
 
 # pip
-RUN apt-get -y install python-pip && pip install -U pip && pip --version
+RUN apt-get -y install python-pip && pip install -U pip && hash -r
+RUN pip --version
 RUN pip install -U setuptools && easy_install --version
 
 # expect-dev: /usr/bin/unbuffer
