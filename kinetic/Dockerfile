@@ -67,7 +67,8 @@ RUN adduser tork dialout
 ##
 ## setup packages
 ##
-RUN apt-get update && echo "@DATE@"
+RUN apt-get update && echo "@UPDATED_DATE@"
+RUN apt-get dist-upgrade -y
 
 # install dev. tools
 RUN apt-get -y install aptitude git ntp emacs vim wget curl
@@ -168,6 +169,10 @@ RUN apt-get -y install gdebi-core indicator-multiload gitk
 ## The following packages have unmet dependencies:
 ##  tork-defaults : Depends: xserver-xorg-input-vmmouse but it is not going to be installed
 ## c.f. https://circleci.com/gh/tork-a/live-cd2/623
+
+## update to latest
+RUN apt-get update && echo "@CURRENT_DATE@"
+RUN apt-get dist-upgrade -y
 
 ## clean up
 RUN apt-get clean

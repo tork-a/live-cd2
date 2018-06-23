@@ -6,7 +6,8 @@
 
 # http://eli.thegreenplace.net/2013/12/18/makefile-functions-and-color-output
 include ../color.mk
-DATE=$(shell date +%Y%m%d_%H%M%S)
+UPDATED_DATE=$(shell wget -S http://packages.ros.org/ros/ubuntu/dists/xenial/Release  -O - | grep Date) ## need to set last update of package.ros.org
+CURRENT_DATE=$(shell date +%Y%m%d_%H%M%S)
 GIT_TAG=$(shell git describe --abbrev=0 --tags)
 
 all: Dockerfile
@@ -21,9 +22,12 @@ all: Dockerfile
 	echo "-----------------" >> CHANGELOG.rst
 	echo "" >> CHANGELOG.rst
 	git log --oneline >> CHANGELOG.rst
-	cat Dockerfile | sed 's#@DATE@#$(DATE)#' Dockerfile | sed 's#@GIT_TAG@#$(GIT_TAG)#' > Dockerfile.$(DATE)
-	docker build -f Dockerfile.$(DATE) -t tork/kinetic .
-	rm Dockerfile.$(DATE) CHANGELOG.rst
+	cp Dockerfile Dockerfile.tmp
+	sed -i 's#@UPDATED_DATE@#$(UPDATED_DATE)#' Dockerfile.tmp
+	sed -i 's#@CURRENT_DATE@#$(CURRENT_DATE)#' Dockerfile.tmp
+	sed -i 's#@GIT_TAG@#$(GIT_TAG)#'  Dockerfile.tmp
+	docker build -f Dockerfile.tmp -t tork/kinetic:latest .
+	rm Dockerfile.tmp CHANGELOG.rst
 	$(call colorecho, "docker images")
 	docker images tork/kinetic
 
