@@ -281,8 +281,8 @@ endif
 
 	$(call colorecho, "run tork-defaults-config")
 	sh -x ./tork-defaults-config --release ${RELEASE} --package tork-defaults_0.1_all.deb --components main,restricted,universe,multiverse # --ppa xorg-edgers/ppa
-	test "${RELEASE}" = "trusty" && sed -i 's@-hwe-16.04@@' config/chroot config/package-lists/* || echo "OK" # -hwe-16.04 is not available on indigo/trusty
-	test "${RELEASE}" = "trusty" && sed -i 's@linux-signed-generic@linux-signed-generic-lts-xenial@' config/chroot config/package-lists/* || echo "OK" # indigo/trusty needs latest kernel
+	#test "${RELEASE}" = "trusty" && sed -i 's@-hwe-16.04@@' config/chroot config/package-lists/* || echo "OK" # -hwe-16.04 is not available on indigo/trusty
+	#test "${RELEASE}" = "trusty" && sed -i 's@linux-signed-generic@linux-signed-generic-lts-xenial@' config/chroot config/package-lists/* || echo "OK" # indigo/trusty needs latest kernel
 	### latest kernel installs intel-microcode/amd64-microcode, which generate initrd.img with is not a simple zipped file image. This cause problem on lb_binary_disk
 	sudo sed -i '/# Deconfiguring chroot/i sudo chroot chroot /bin/bash -c "sudo apt-get --yes remove amd64-microcode intel-microcode || echo 0"' /usr/lib/live/build/lb_chroot
 	# add-apt-repository generate fiels in archvies, since lb config cleans config/archives
