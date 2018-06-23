@@ -134,7 +134,8 @@ tork-docker.sh:
 	echo "EOF" >> tork-docker.sh
 	# workaround for https://github.com/ros-infrastructure/catkin_pkg/pull/190
 	#sed -i 's@apt-get clean@apt-get clean; sed -i "s/< 100:/< 1000:/" /usr/lib/python2.7/dist-packages/catkin_pkg/packages.py; cat /usr/lib/python2.7/dist-packages/catkin_pkg/packages.py@' tork-docker.sh
-	sed -i 's@wget -qO- https://get.docker.com/ | sh@wget -qO- http://get.docker.com/ | sed "s%https://%http://%" | sh@' tork-docker.sh
+	# does not work with circleci2/14.04?
+	#sed -i 's@wget -qO- https://get.docker.com/ | sh@wget -qO- http://get.docker.com/ | sed "s%https://%http://%" | sh@' tork-docker.sh
 	cat -n tork-docker.sh
 
 tork-defaults:
@@ -199,9 +200,10 @@ archives/tork-defaults.list:
 	## get from docker
 	mkdir -p archives/
 	docker run --rm tork/${ROS_DISTRO} sh -c 'cat /etc/apt/sources.list.d/*.list' > archives/tork-defaults.list;
-	docker run --rm tork/${ROS_DISTRO} sh -c 'cat /etc/apt/sources.list | grep docker.com || echo ""' >> archives/tork-defaults.list;
-	sed -i 's@https://@http://@' archives/tork-defaults.list
-	sed -i 's@\[.*\]@@' archives/tork-defaults.list
+	#docker run --rm tork/${ROS_DISTRO} sh -c 'cat /etc/apt/sources.list | grep docker.com || echo ""' >> archives/tork-defaults.list;
+	#sed -i 's@https://@http://@' archives/tork-defaults.list
+	#sed -i 's@\[.*\]@@' archives/tork-defaults.list
+	sed -i '/docker.com/s/^/#/' archives/tork-defaults.list
 	cat -n archives/tork-defaults.list
 
 archives/tork-defaults.key:
