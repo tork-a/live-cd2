@@ -1,0 +1,254 @@
+version: 2.0
+
+references:
+  docker_show_image: &docker_show_image
+    run:
+      name: Show Docker Image
+      command: docker images
+
+  docker_build_image: &docker_build_image
+    run:
+      name: Build Docker Image
+      command: cd $ROS_DISTRO && make
+
+  docker_test_image: &docker_test_image
+    run:
+      name: Test Docker Image
+      command: cd $ROS_DISTRO && make test
+
+  docker_container_save_cache_key: &docker_container_save_cache_key
+    key: docker-image-{{ checksum "__rosdistro_name__" }}-{{ checksum "__ros_release_checksum__" }}-{{ .Revision }}
+
+  docker_container_load_cache_key: &docker_container_load_cache_key
+    keys:
+      - docker-image-{{ checksum "__rosdistro_name__" }}-{{ checksum "__ros_release_checksum__" }}-{{ .Revision }}
+      - docker-image-{{ checksum "__rosdistro_name__" }}-{{ checksum "__ros_release_checksum__" }}
+
+  docker_load_cache: &docker_load_cache
+    run:
+      name: Load Docker layers cache
+      command: |
+        if test -d ~/docker; then ls -al ~/docker; fi
+        if test -e ~/docker/tork-$ROS_DISTRO.tar; then docker load -i ~/docker/tork-$ROS_DISTRO.tar; else echo "No cache found"; fi
+
+  docker_save_cache: &docker_save_cache
+    run:
+      name: Save Docker layers cache
+      command: |
+        mkdir -p ~/docker
+        rm -fr ~/docker/*
+        #docker save -o ~/docker/tork-$ROS_DISTRO.tar tork/$ROS_DISTRO:latest
+        docker save -o ~/docker/tork-$ROS_DISTRO.tar tork/$ROS_DISTRO:latest $(docker history tork/$ROS_DISTRO -q | grep -v missing | tr '\n' ' ')
+
+  build_docker: &build_docker
+    steps:
+      - checkout
+      - run: echo "$ROS_DISTRO" > __rosdistro_name__
+      - run: echo "Check sum file for package.ros.org and current Dockerfile" > __ros_release_checksum__
+      - run: wget -S http://packages.ros.org/ros/ubuntu/dists/$(case "$ROS_DISTRO" in "indigo") echo "trusty";; "kinetic") echo "xenial";; esac)/Release -O - >> __ros_release_checksum__
+      - run: cat $ROS_DISTRO/Dockerfile >> __ros_release_checksum__
+      - run: cat __ros_release_checksum__
+      - restore_cache:
+          <<: *docker_container_load_cache_key
+      - *docker_load_cache
+      - *docker_show_image
+      - *docker_build_image
+      - *docker_show_image
+      - *docker_save_cache
+      - save_cache:
+          <<: *docker_container_save_cache_key
+          paths: ~/docker
+      - persist_to_workspace:
+          root: /home/circleci
+          paths:
+            - docker
+
+  test_docker: &test_docker
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - checkout
+      - *docker_load_cache
+      - *docker_show_image
+      - *docker_test_image
+
+  build_builder: &build_builder
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - checkout
+      - *docker_load_cache
+      - *docker_show_image
+      - run:
+          name: Apt update
+          command: sudo apt-get update
+      - run:
+          name: (Hack) Install 16.04 stuff for kinetic-iso-build, because CirclecCI uses 14.04 machine
+          command: |
+            if [ "$ROS_DISTRO" == "indigo" ]; then exit 0 ; fi
+            wget http://ftp.osuosl.org/pub/ubuntu/pool/main/s/syslinux/isolinux_6.03+dfsg-11ubuntu1_all.deb
+            sudo dpkg -i isolinux*.deb
+            sudo apt-get -y -q install gdebi
+            wget http://ftp.osuosl.org/pub/ubuntu/pool/main/s/syslinux-themes-ubuntu/syslinux-themes-ubuntu-xenial_12_amd64.deb
+            sudo gdebi -n syslinux-themes-ubuntu*.deb
+            sudo wget http://ftp.osuosl.org/pub/ubuntu/pool/main/s/syslinux-themes-ubuntu/syslinux-themes-ubuntu_12_amd64.deb
+            sudo gdebi -n syslinux-themes-ubuntu*.deb
+            # install syslinux-themes requries syslinx-common for "syslinux-common: /usr/lib/syslinux/modules/bios/gfxboot.c32"
+            wget http://ftp.osuosl.org/pub/ubuntu/pool/main/s/syslinux/syslinux_6.03+dfsg-11ubuntu1_amd64.deb
+            sudo gdebi -n syslinux_6.03+dfsg-11ubuntu1_amd64.deb
+            wget http://ftp.osuosl.org/pub/ubuntu/pool/main/s/syslinux/syslinux-common_6.03+dfsg-11ubuntu1_all.deb
+            sudo dpkg -i syslinux-common_6.03+dfsg-11ubuntu1_all.deb
+            # reset linkx of syslinux-themes
+            sudo rm -fr /usr/share/syslinux/themes/ubuntu-trusty
+            sudo ln -sf /usr/share/syslinux/themes/ubuntu-xenial /usr/share/syslinux/themes/ubuntu-trusty
+            # install isohybrid
+            wget http://ftp.osuosl.org/pub/ubuntu/pool/universe/s/syslinux/syslinux-utils_6.03+dfsg-11ubuntu1_amd64.deb
+            sudo dpkg -i syslinux-utils_6.03+dfsg-11ubuntu1_amd64.deb
+      - run:
+          name: Setup make-efi-iso.sh
+          command: cd builder && make update-make-efi-iso-sh
+      - run:
+          name: Setup ISO Builder
+          command: cd builder && make setup-local
+      - run:
+          name: Run ISO Builder
+          command: cd builder && make iso-build
+          no_output_timeout: 30m
+      - run:
+          name: Copy ISO filfes to Artifacts Directory
+          command: |
+            mkdir -p ~/artifacts
+            cp builder/*.iso ~/artifacts/
+      - store_artifacts:
+          path: /home/circleci/artifacts
+      - persist_to_workspace:
+          root: /home/circleci
+          paths:
+            - artifacts
+
+  test_builder: &test_builder
+    steps:
+      - attach_workspace:
+          at: /home/circleci
+      - checkout
+      - run:
+          name: Copy Artifacts
+          command: cp ~/artifacts/$ROS_DISTRO-*.iso ~/project/builder/
+      - run:
+          name: Apt update
+          command: sudo apt-get update
+      - run:
+          name: Setup vagrant
+          command: cd vagrant && make install-vbox
+      - run:
+          name: Test ISO
+          command: cd builder && make iso-test
+
+jobs:
+  ## iso
+  "setup-iso":
+    machine: true
+    environment:
+      - u1404: 14.04.5
+      - u1604: 16.04.2
+      - Ubuntu_URL: http://releases.ubuntu.com
+    steps:
+      - checkout
+      - run: echo "$u1404-$u1604" > _iso_version
+      - run: cat _iso_version
+      - restore_cache:
+          key: iso-{{ checksum "_iso_version" }}
+      - run: mkdir -p ~/Downloads
+      - run: ls -al ~/Downloads
+      - run: if test ! -e ~/Downloads/ubuntu-$u1404-desktop-amd64.iso; then wget $Ubuntu_URL/$u1404/ubuntu-$u1404-desktop-amd64.iso -O ~/Downloads/ubuntu-$u1404-desktop-amd64.iso; fi
+      - run: if test ! -e ~/Downloads/ubuntu-$u1604-desktop-amd64.iso; then wget $Ubuntu_URL/$u1604/ubuntu-$u1604-desktop-amd64.iso -O ~/Downloads/ubuntu-$u1604-desktop-amd64.iso; fi
+      - save_cache:
+          key: iso-{{ checksum "_iso_version" }}
+          paths:
+            - ~/Downloads
+      - persist_to_workspace:
+          root: /home/circleci
+          paths:
+            - Downloads
+
+  "build-iso-indigo":
+    machine: true
+    environment:
+      - ROS_DISTRO: "indigo"
+    <<: *build_builder
+
+  "build-iso-kinetic":
+    machine: true
+    environment:
+      - ROS_DISTRO: "kinetic"
+    <<: *build_builder
+
+  "test-iso-indigo":
+    machine: true
+    environment:
+      - ROS_DISTRO: "indigo"
+    <<: *test_builder
+
+  "test-iso-kinetic":
+    machine: true
+    environment:
+      - ROS_DISTRO: "kinetic"
+    <<: *test_builder
+
+  ## docker
+  "build-docker-indigo":
+    machine: true
+    environment:
+      - ROS_DISTRO: "indigo"
+    <<: *build_docker
+
+  "build-docker-kinetic":
+    machine: true
+    environment:
+      - ROS_DISTRO: "kinetic"
+    <<: *build_docker
+
+  "test-docker-indigo":
+    machine: true
+    environment:
+      - ROS_DISTRO: "indigo"
+    <<: *test_docker
+
+  "test-docker-kinetic":
+    machine: true
+    environment:
+      - ROS_DISTRO: "kinetic"
+    <<: *test_docker
+
+workflows:
+  version: 2
+  build:
+    jobs:
+      # setup iso
+      - "setup-iso"
+      # build docker
+      - "build-docker-indigo"
+      - "build-docker-kinetic"
+      # test docker
+      - "test-docker-indigo":
+          requires:
+            - "build-docker-indigo"
+      - "test-docker-kinetic":
+          requires:
+            - "build-docker-kinetic"
+      # build iso
+      - "build-iso-indigo":
+          requires:
+            - "setup-iso"
+            - "build-docker-indigo"
+      - "build-iso-kinetic":
+          requires:
+            - "setup-iso"
+            - "build-docker-kinetic"
+      # test iso
+      - "test-iso-indigo":
+          requires:
+            - "build-iso-indigo"
+      - "test-iso-kinetic":
+          requires:
+            - "build-iso-kinetic"
