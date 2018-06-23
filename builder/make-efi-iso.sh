@@ -33,6 +33,11 @@ cat boot/grub/grub.cfg
 grep tork isolinux/txt.cfg
 grep persistent boot/grub/grub.cfg
 
+if [ -e /usr/lib/ISOLINUX/ ]; then # from 16.04
+    ISOLINUX_PATH=/usr/lib/ISOLINUX
+else
+    ISOLINUX_PATH=/usr/lib/syslinux
+fi
 cd ..
 cat <<EOF | sudo tee sort.txt
 100 boot/
@@ -41,4 +46,4 @@ cat <<EOF | sudo tee sort.txt
 70 preseed/
 EOF
 
-sudo xorriso -as mkisofs -volid "Ubuntu/ROS ja amd64" -o $ROS_DISTRO-tork-`date +%Y%m%d_%H%M%S`.iso -rock -omit-version-number -disable-deep-relocation -joliet -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin -c isolinux/boot.cat -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat -isohybrid-apm-hfsplus --sort-weight-patterns sort.txt binary/
+sudo xorriso -as mkisofs -volid "Ubuntu/ROS ja amd64" -o $ROS_DISTRO-tork-`date +%Y%m%d_%H%M%S`.iso -rock -omit-version-number -disable-deep-relocation -joliet -isohybrid-mbr $ISOLINUX_PATH/isohdpfx.bin -c isolinux/boot.cat -b isolinux/isolinux.bin -no-emul-boot -boot-load-size 4 -boot-info-table -eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot -isohybrid-gpt-basdat -isohybrid-apm-hfsplus --sort-weight-patterns sort.txt binary/
