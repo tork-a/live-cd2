@@ -17,5 +17,16 @@ cat .bashrc # show .bashrc
 echo "= Check rospy_tutorials is working"
 cd catkin_ws && source devel/setup.bash && rostest rospy_tutorials talker_listener.launch
 
+echo "= Check keyboard layout https://github.com/tork-a/live-cd2/issues/46"
+sudo apt-get --yes install wmctrl
+export DISPLAY=:0.0
+set -x
+xdpyinfo
+for i in $(seq 1 5); do  wmctrl -m && break; sleep 60; done
+sleep 10 # wait few more seconds
+xdpyinfo
+setxkbmap -query
+xterm -e "setxkbmap -query > /tmp/setxkbmap.log"; cat /tmp/setxkbmap.log | tee >(cat 1>&2) |  grep -e 'layout:\s*jp' > /dev/null
+
 echo "= Passed All Tests"
 
