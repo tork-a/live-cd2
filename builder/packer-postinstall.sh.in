@@ -2,16 +2,20 @@
 
 set -e
 
-rospack list # check .bashrc includes ROS settings
-
-. /opt/ros/@ROS_DISTRO@/setup.bash # check default ROS settings
+echo "= Check .bashrc includes ROS settings"
 rospack list
 
+echo "= Check default ROS settings"
+. /opt/ros/@ROS_DISTRO@/setup.bash
+rospack list
+
+echo "= Check current status"
 pwd  # show current directory
 find # show home directory
 cat .bashrc # show .bashrc
+
+echo "= Check rospy_tutorials is working"
 cd catkin_ws && source devel/setup.bash && rostest rospy_tutorials talker_listener.launch
 
-
-
+echo "= Passed All Tests"
 
