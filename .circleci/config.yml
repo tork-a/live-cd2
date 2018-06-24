@@ -118,7 +118,7 @@ references:
           name: Copy ISO filfes to Artifacts Directory
           command: |
             mkdir -p ~/artifacts
-            cp builder/*.iso ~/artifacts/
+            cp builder/$ROS_DISTRO-*.iso ~/artifacts/
       - store_artifacts:
           path: /home/circleci/artifacts
       - persist_to_workspace:
