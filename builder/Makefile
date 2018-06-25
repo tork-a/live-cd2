@@ -171,10 +171,12 @@ tork-defaults/debian/20_tork-defaults.gschema.override:
 	echo "xkb-options=['ctrl:nocaps']"  >> tork-defaults/debian/20_tork-defaults.gschema.override
 
 	$(call colorecho, 'gsettings set org.gnome.desktop.input-sources sources [("xkb", "jp") ("ibus", "mozc-jp")]')
-	#echo "sources=[('xkb', 'jp'), ('ibus', 'mozc-jp')]" >> tork-defaults/debian/20_tork-defaults.gschema.override
+ifeq (${RELEASE},trusty)
+	echo "sources=[('xkb', 'jp'), ('ibus', 'mozc-jp')]" >> tork-defaults/debian/20_tork-defaults.gschema.override
 	# custom settings https://bugs.launchpad.net/unity/+bug/1418939
 	## I tried to use `gsettings set org.gnome.desktop.input-sources sources [('xkb', 'jp'), ('ibus', 'mozc-jp')]` but it dit not work until you run `gsettings reset org.gnome.desktop.input-sources sources`
 	## only `org.gnome.libgnomekbd.keyboard` is working
+endif
 	echo "[org.gnome.libgnomekbd.keyboard]" >> tork-defaults/debian/20_tork-defaults.gschema.override
 	echo "layouts=['jp']" >> tork-defaults/debian/20_tork-defaults.gschema.override
 
