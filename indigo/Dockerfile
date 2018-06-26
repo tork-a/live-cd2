@@ -157,9 +157,6 @@ RUN echo "smallfiles = true" >> /etc/mongodb.conf
 ## dpkg-gencontrol: warning: can't parse dependency gnuplot-nox
 ## c.f. https://circleci.com/gh/tork-a/live-cd2/623
 
-# install fcitx-mozc (https://github.com/tork-a/live-cd2/issues/23#issuecomment-339284177)
-RUN apt-get -y install fcitx-mozc
-
 #
 RUN apt-get -y install gdebi-core indicator-multiload gitk
 ## COULD NOT INSTALL unity-tweak-tool DUE TO
