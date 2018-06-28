@@ -142,7 +142,7 @@ references:
           command: cd vagrant && make install-vbox
       - run:
           name: Test ISO
-          command: cd builder && make iso-test
+          command: cd builder && (make iso-test || make iso-test)
 
 jobs:
   ## iso
