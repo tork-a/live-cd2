@@ -45,7 +45,7 @@ iso-build-debug:
 ###
 ###
 setup-local:
-	sudo apt-get install -y git build-essential fakeroot debhelper gdebi live-build ubuntu-defaults-builder p7zip-full
+	sudo apt-get install -y git build-essential fakeroot debhelper gdebi live-build zutils ubuntu-defaults-builder p7zip-full
 	7z x -y -o/tmp/iso/indigo  ~/Downloads/ubuntu-14.04.5-desktop-amd64.iso
 	7z x -y -o/tmp/iso/kinetic ~/Downloads/ubuntu-16.04.2-desktop-amd64.iso
 	make clean
@@ -134,7 +134,8 @@ tork-docker.sh:
 	echo "EOF" >> tork-docker.sh
 	# workaround for https://github.com/ros-infrastructure/catkin_pkg/pull/190
 	#sed -i 's@apt-get clean@apt-get clean; sed -i "s/< 100:/< 1000:/" /usr/lib/python2.7/dist-packages/catkin_pkg/packages.py; cat /usr/lib/python2.7/dist-packages/catkin_pkg/packages.py@' tork-docker.sh
-	sed -i 's@wget -qO- https://get.docker.com/ | sh@wget -qO- http://get.docker.com/ | sed "s%https://%http://%" | sh@' tork-docker.sh
+	# does not work with circleci2/14.04?
+	#sed -i 's@wget -qO- https://get.docker.com/ | sh@wget -qO- http://get.docker.com/ | sed "s%https://%http://%" | sh@' tork-docker.sh
 	cat -n tork-docker.sh
 
 tork-defaults:
@@ -170,10 +171,12 @@ tork-defaults/debian/20_tork-defaults.gschema.override:
 	echo "xkb-options=['ctrl:nocaps']"  >> tork-defaults/debian/20_tork-defaults.gschema.override
 
 	$(call colorecho, 'gsettings set org.gnome.desktop.input-sources sources [("xkb", "jp") ("ibus", "mozc-jp")]')
-	#echo "sources=[('xkb', 'jp'), ('ibus', 'mozc-jp')]" >> tork-defaults/debian/20_tork-defaults.gschema.override
+ifeq (${RELEASE},trusty)
+	echo "sources=[('xkb', 'jp'), ('ibus', 'mozc-jp')]" >> tork-defaults/debian/20_tork-defaults.gschema.override
 	# custom settings https://bugs.launchpad.net/unity/+bug/1418939
 	## I tried to use `gsettings set org.gnome.desktop.input-sources sources [('xkb', 'jp'), ('ibus', 'mozc-jp')]` but it dit not work until you run `gsettings reset org.gnome.desktop.input-sources sources`
 	## only `org.gnome.libgnomekbd.keyboard` is working
+endif
 	echo "[org.gnome.libgnomekbd.keyboard]" >> tork-defaults/debian/20_tork-defaults.gschema.override
 	echo "layouts=['jp']" >> tork-defaults/debian/20_tork-defaults.gschema.override
 
@@ -199,9 +202,10 @@ archives/tork-defaults.list:
 	## get from docker
 	mkdir -p archives/
 	docker run --rm tork/${ROS_DISTRO} sh -c 'cat /etc/apt/sources.list.d/*.list' > archives/tork-defaults.list;
-	docker run --rm tork/${ROS_DISTRO} sh -c 'cat /etc/apt/sources.list | grep docker.com || echo ""' >> archives/tork-defaults.list;
-	sed -i 's@https://@http://@' archives/tork-defaults.list
-	sed -i 's@\[.*\]@@' archives/tork-defaults.list
+	#docker run --rm tork/${ROS_DISTRO} sh -c 'cat /etc/apt/sources.list | grep docker.com || echo ""' >> archives/tork-defaults.list;
+	#sed -i 's@https://@http://@' archives/tork-defaults.list
+	#sed -i 's@\[.*\]@@' archives/tork-defaults.list
+	sed -i '/docker.com/s/^/#/' archives/tork-defaults.list
 	cat -n archives/tork-defaults.list
 
 archives/tork-defaults.key:
@@ -279,8 +283,10 @@ endif
 
 	$(call colorecho, "run tork-defaults-config")
 	sh -x ./tork-defaults-config --release ${RELEASE} --package tork-defaults_0.1_all.deb --components main,restricted,universe,multiverse # --ppa xorg-edgers/ppa
-	test "${RELEASE}" = "trusty" && sed -i 's@-hwe-16.04@@' config/chroot config/package-lists/* || echo "OK" # -hwe-16.04 is not available on indigo/trusty
-	test "${RELEASE}" = "trusty" && sed -i 's@linux-signed-generic@linux-signed-generic-lts-xenial@' config/chroot config/package-lists/* || echo "OK" # indigo/trusty needs latest kernel
+	#test "${RELEASE}" = "trusty" && sed -i 's@-hwe-16.04@@' config/chroot config/package-lists/* || echo "OK" # -hwe-16.04 is not available on indigo/trusty
+	#test "${RELEASE}" = "trusty" && sed -i 's@linux-signed-generic@linux-signed-generic-lts-xenial@' config/chroot config/package-lists/* || echo "OK" # indigo/trusty needs latest kernel
+	### latest kernel installs intel-microcode/amd64-microcode, which generate initrd.img with is not a simple zipped file image. This cause problem on lb_binary_disk
+	sudo sed -i '/# Deconfiguring chroot/i sudo chroot chroot /bin/bash -c "sudo apt-get --yes remove amd64-microcode intel-microcode || echo 0"' /usr/lib/live/build/lb_chroot
 	# add-apt-repository generate fiels in archvies, since lb config cleans config/archives
 	$(call colorecho, "make add-apt-repository")
 	make add-apt-repository
