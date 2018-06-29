@@ -228,12 +228,12 @@ jobs:
       - checkout
       - run:
           name: Load Docker layers cache
-          commands: |
+          command: |
             for filename in ~/docker/tork-*.tar; do docker load -i $filename; done
       - *docker_show_image
       - run:
           name: Upload to AWS S3
-          commands: |
+          command: |
             for filename in ~/artifacts/*.iso; do aws s3 cp $filename s3://live-cd2/$(basename $filename) --acl public-read; echo "https://s3-ap-northeast-1.amazonaws.com/live-cd2/$(basename $filename)" >> ~/artifacts/s3.txt; done
             cat ~/artifacts/s3.txt
       - run:
